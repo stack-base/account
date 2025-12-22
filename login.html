@@ -3,48 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StackBase Single Sign-On</title>
-    <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#242526" media="(prefers-color-scheme: dark)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    
+    <title>StackBase Single Sign-On</title>
+    <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
+
     <style>
+        /* CSS variables as requested */
         :root {
+            --transition-speed-fast: 0.2s;
             --transition-speed-normal: 0.3s;
+            --transition-speed-slow: 0.4s;
+            --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+            --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            
+            --navbar-background-1: white;
             --background-1: white;
             --background-2: #f0f2f5;
+            --background-3: black;
+            --background-4: #f0f2f5;
+            --background-5: #eaebf5;
             --card-background-1: white;
+            --card-background-2: whitesmoke;
             --text-color-1: #050505;
             --text-color-2: #65676b;
+            --text-color-3: white;
+            --shadow-1: 0 2px 6px 0 rgba(136, 148, 171, 0.2), 0 24px 20px -24px rgba(71, 82, 107, 0.1);
+            --shadow-2: 0 2px 10px rgba(0, 0, 0, 0.1);
+
             --button-background-1: #1877f2;
             --button-background-2: #e4e6eb;
+            --button-background-3: #3d42df;
+            --button-text-1: #ffffff;
+            --button-text-2: #050505;
+            --button-text-3: #ffffff;
+            --hover-overlay: rgba(0, 0, 0, 0.05);
+
+            /* ADDED: Secondary button color for "Create Account" */
             --button-background-secondary: #34a853; 
-            --shadow-1: 0 2px 6px 0 rgba(136, 148, 171, 0.2), 0 24px 20px -24px rgba(71, 82, 107, 0.1);
+
+            --sidebar-width: 260px;
+            --sidebar-width-collapsed: 80px;
         }
 
         body.dark-mode {
-            --background-1: #18191a;
-            --background-2: #242526;
+            --navbar-background-1: #18191a;
+            --background-1: black;
+            --background-2: #18191a;
+            --background-3: white;
+            --background-4: #242526;
+            --background-5: #18191a;
             --card-background-1: #242526;
+            --card-background-2: #242526;
             --text-color-1: white;
             --text-color-2: #b0b3b8;
+            --text-color-3: black;
+            --shadow-1: 0px 0px 8px 0px #111;
+            --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.25);
+
             --button-background-1: #2d88ff;
+            --button-background-2: #3a3b3c;
+            --button-background-3: #6f74ff;
+            --button-text-1: #ffffff;
+            --button-text-2: #e4e6eb;
+            --button-text-3: #ffffff;
+            --hover-overlay: rgba(255, 255, 255, 0.08);
+            
+            /* ADDED: Dark mode secondary button */
             --button-background-secondary: #2ecc71;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* General Reset & Body styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-1);
             color: var(--text-color-1);
-            overflow: hidden;
+            transition: background-color var(--transition-speed-normal) ease, color var(--transition-speed-normal) ease;
+            overflow-x: hidden;
         }
 
         .login-page {
             position: relative;
             min-height: 100vh;
-            display: flex;
-            justify-content: flex-end;
+            user-select: none;
+            overflow: hidden;
         }
 
         .login-page::before {
@@ -52,213 +105,464 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: url("https://stack-base.github.io/media/backgrounds/3.jpg");
+            background-repeat: no-repeat;
             background-size: cover;
+            /* filter: blur(8px); */
             z-index: -1;
+            transform: scale(1.05); /* Avoids blurred edges */
         }
 
         .login-card {
             background-color: var(--card-background-1);
-            padding: 2rem 3rem;
-            width: 100%;
-            max-width: 450px;
-            height: 100vh;
+            padding: 2rem 3rem; /* Using consistent rem padding */
+            border-radius: 0px;
             box-shadow: var(--shadow-1);
+            float: inline-end;
+            width: 25%; /* A slightly wider percentage */
+            height: 100vh;
+            min-width: 420px; /* Adjusted min-width */
+            max-width: 500px; /* Adjusted max-width */
+            text-align: center;
+            
+            /* The following properties will center the content vertically */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
+        @media screen and (max-width: 768px) {
+            .login-page {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 1rem;
+                min-height: 100vh;
+                width: 100%;
+                background-color: var(--background-1);
+                background-image: none;
+            }
+            
+            .login-page::before {
+                display: none; /* Hide blurred background on mobile */
+            }
+
+            .login-card {
+                float: none; 
+                height: auto;
+                width: 100%;
+                min-width: 0;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: none;
+                max-width: 400px;
+            }
+
+            
+            .logo-link {
+                margin-bottom: 60px;
+            }
+
+            .login-logo {
+                width: 70px;
+            }
+
+            .login-brand-name {
+                font-size: 2.5rem;
+            }
+        }
+
         .logo-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            display: inline-block;
+            line-height: 0; /* Prevents extra space below image */
+            margin-bottom: 70px;
             text-decoration: none;
-            margin-bottom: 3rem;
+            display: inline-flex;
+            gap: 1rem;
+            align-items: center;
         }
         
-        .login-logo { width: 60px; }
-        .login-brand-name { color: var(--text-color-1); font-size: 2rem; }
+        .login-logo {
+            width: 70px;
+        }
 
-        .login-form { width: 100%; }
+        .login-brand-name {
+            text-decoration: none;
+            color: var(--button-text-2);
+            font-size: 2.5rem;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .login-form {
+            width: 100%;
+        }
 
         .input-group {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: left;
         }
         
         .input-icon {
             position: absolute;
-            left: 15px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
             width: 20px;
+            height: 20px;
             color: var(--text-color-2);
+            transition: color var(--transition-speed-normal) ease;
+            pointer-events: none; /* Allows clicking through the icon */
         }
 
         .login-form input {
             width: 100%;
-            padding: 14px 14px 14px 45px;
+            padding: 14px 18px 14px 50px; /* Increased padding */
             border: 1px solid var(--button-background-2);
-            border-radius: 8px;
-            background-color: var(--background-2);
+            border-radius: 30px;
             color: var(--text-color-1);
-            font-size: 16px;
+            font-size: 16px; /* Slightly smaller font for better fit */
+            font-weight: 500;
+            background-color: var(--background-2);
+            transition: border-color var(--transition-speed-normal), box-shadow var(--transition-speed-normal);
+        }
+
+        .login-form input:focus {
+            outline: none;
+            /* box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2); Focus ring removed */
+            background-color: var(--background-1);
+            border-color: var(--button-background-1);
+        }
+
+        .input-group:focus-within .input-icon {
+            color: var(--button-background-1);
         }
 
         .form-action-button {
-            width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 40px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
-            transition: opacity 0.2s;
+            transition: background-color var(--transition-speed-normal) ease, transform var(--transition-speed-fast) ease, box-shadow var(--transition-speed-normal) ease, opacity var(--transition-speed-normal) ease;
+            margin-top: 15px;
+            width: 100%; /* MOD: Make all buttons full-width */
         }
 
-        .login-primary { background-color: var(--button-background-1); color: white; }
-        .signup-primary { background-color: var(--button-background-secondary); color: white; }
+        .login {
+            background-color: var(--button-background-1);
+            color: var(--button-text-1);
+        }
         
+        .login:hover {
+            opacity: 0.9;
+        }
+
+        /* ADDED: Create Account button style */
+        .create-account {
+            background-color: var(--button-background-secondary);
+            color: var(--button-text-1);
+        }
+        .create-account:hover {
+            opacity: 0.9;
+        }
+
         .continue-google {
-            background-color: transparent;
-            border: 1px solid var(--button-background-2);
-            color: var(--text-color-1);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            background-color: var(--background-1);
+            color: var(--text-color-2);
+            border: 1px solid var(--button-background-2);
+            margin-top: 0;
+        }
+        
+        .continue-google:hover {
+            background-color: var(--background-1);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-2);
         }
 
-        .separator { margin: 20px 0; color: var(--text-color-2); font-size: 12px; }
+        .form-action-button:active {
+            transform: scale(0.98);
+            box-shadow: none; /* Remove shadow on click */
+        }
+        
+        /* ADDED: Hide password field by default */
+        .input-group.password {
+            display: none;
+        }
+        
+        /* ADDED: Show password when in create-account mode */
+        .login-form.create-account-mode .input-group.password {
+            display: block;
+        }
 
+        /* ADDED: Change button text based on mode */
+        .login-form .login { display: inline-block; }
+        .login-form .create-account { display: none; }
+        
+        .login-form.create-account-mode .login { display: none; }
+        .login-form.create-account-mode .create-account { display: inline-block; }
+
+        /* ADDED: Style for the "or" separator */
+        .separator {
+             margin: 1.5rem 0;
+             color: var(--text-color-2);
+        }
+
+        /* ADDED: Style for the toggle link */
         .toggle-mode {
-            background: none; border: none; color: var(--button-background-1);
-            cursor: pointer; margin-top: 20px; font-weight: 500;
+            color: var(--button-background-1);
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1.5rem;
         }
+        .toggle-mode:hover {
+            text-decoration: underline;
+        }
+
 
         #error-message {
-            color: #ff3b30; font-size: 14px; margin-top: 15px;
-            min-height: 20px; visibility: hidden; opacity: 0;
+            color: #ff3b30;
+            margin-top: 16px;
+            font-size: 14px;
+            height: auto; /* MOD: Allow multiple lines */
+            min-height: 20px; /* MOD: Keep min height */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity var(--transition-speed-normal);
+            line-height: 1.4;
         }
-        #error-message.visible { visibility: visible; opacity: 1; }
-
-        /* Logic to show/hide specific buttons */
-        .mode-signup #loginBtn, .mode-login #createAccountBtn { display: none; }
-
-        @media (max-width: 768px) {
-            .login-card { max-width: 100%; }
-            .login-page::before { display: none; }
+        
+        #error-message.visible {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="mode-login">
-    <div class="login-page">
+<body oncontextmenu="return false;">
+    <div id="login-page" class="login-page">
         <div class="login-card">
-            <a href="#" class="logo-link">
-                <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="login-logo">
+            <a href="https://stack-base.github.io/home" class="logo-link">
+                <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="StackBase Logo" class="login-logo">
                 <h1 class="login-brand-name">StackBase</h1>
             </a>
             
+            <!-- MOD: Removed 'submit' event, will use button clicks -->
             <form id="login-form" class="login-form">
                 <div class="input-group">
-                    <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
-                    <input type="email" id="email" placeholder="Email Address" required>
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    <!-- MOD: Changed id and type -->
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                </div>
+                <!-- MOD: Added 'password' class -->
+                <div class="input-group password">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
                 
-                <div class="input-group">
-                    <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    <input type="password" id="password" placeholder="Password" required>
-                </div>
-                
-                <button type="button" id="loginBtn" class="form-action-button login-primary">Sign In</button>
-                <button type="button" id="createAccountBtn" class="form-action-button signup-primary">Create Account</button>
+                <!-- MOD: Changed to type="button" and added IDs -->
+                <button type="button" id="loginBtn" class="form-action-button login">Sign In</button>
+                <button type="button" id="createAccountBtn" class="form-action-button create-account">Create Account</button>
 
-                <div class="separator">OR</div>
+                <p class="separator">OR</p>
 
                 <button type="button" id="googleLoginBtn" class="form-action-button continue-google">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
-                    Sign in with Google
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/><path d="M1 1h22v22H1z" fill="none"/></svg>
+                    <span>Sign In with Google</span>
                 </button>
 
+                <!-- ADDED: Toggle button -->
                 <button type="button" id="toggleModeBtn" class="toggle-mode">Need an account? Sign up</button>
-            </form>
-            <div id="error-message">Error message here</div>
-        </div>
-    </div>
 
+            </form>
+            <div id="error-message">Invalid username or password.</div>
+        </div>
+        <p style="position: fixed; bottom: 10px; left: 10px; color: white; font-size: 10px; ">StackBase Single Sign-On v1.0.0</p>
+    </div>
+    
+    <!-- ADD: Firebase SDKs -->
     <script type="module">
+        // Import the functions you need from the SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
-            getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-            signInWithPopup, GoogleAuthProvider, onAuthStateChanged
+            getAuth, 
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
+        // Your web app's Firebase configuration (FROM YOUR PREVIOUS MESSAGE)
         const firebaseConfig = {
-            apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
-            authDomain: "timetrekker-app.firebaseapp.com",
-            projectId: "timetrekker-app",
-            storageBucket: "timetrekker-app.firebasestorage.app",
-            messagingSenderId: "83185163190",
-            appId: "1:83185163190:web:e2974c5d0f0274fe5e3f17"
+        apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
+        authDomain: "timetrekker-app.firebaseapp.com",
+        projectId: "timetrekker-app",
+        storageBucket: "timetrekker-app.firebasestorage.app",
+        messagingSenderId: "83185163190",
+        appId: "1:83185163190:web:e2974c5d0f0274fe5e3f17",
+        measurementId: "G-FLZ02E1Y5L"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
+        // DOM Elements
+        const loginForm = document.getElementById('login-form');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const createAccountBtn = document.getElementById('createAccountBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const toggleModeBtn = document.getElementById('toggleModeBtn');
         const errorMessage = document.getElementById('error-message');
-        const toggleBtn = document.getElementById('toggleModeBtn');
-
-        // Redirect Logic
-        const getRedirectUrl = () => {
+        
+        // --- NEW: Function to get redirect URL ---
+        /**
+         * Gets the redirect URL from the query string, or returns a default.
+         * @returns {string} The URL to redirect to after login.
+         */
+        function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
-            return params.get('redirectUrl') || 'https://stack-base.github.io/accounts/dashboard';
-        };
+            const redirectUrl = params.get('redirectUrl');
+            // Basic validation to prevent open redirect vulnerabilities
+            // This is a simple check; for higher security, validate against a whitelist of domains
+            if (redirectUrl && (redirectUrl.startsWith('/') || redirectUrl.startsWith('http://' + window.location.hostname) || redirectUrl.startsWith('https://' + window.location.hostname) || redirectUrl.startsWith('./') || redirectUrl.startsWith('../'))) {
+                return redirectUrl;
+            }
+            // Default page if no valid redirectUrl is provided
+            return 'https://stack-base.github.io/accounts/dashboard'; 
+        }
 
-        // UI State Toggle
-        toggleBtn.addEventListener('click', () => {
-            const isLogin = document.body.classList.contains('mode-login');
-            document.body.classList.toggle('mode-login', !isLogin);
-            document.body.classList.toggle('mode-signup', isLogin);
-            toggleBtn.textContent = isLogin ? "Already have an account? Sign in" : "Need an account? Sign up";
-            hideError();
+        const mainAppUrl = getRedirectUrl(); // MOD: Use the dynamic URL
+
+        // --- Check if already logged in ---
+        // If user is already logged in, redirect them to the app
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('User already logged in. Redirecting to:', mainAppUrl);
+                window.location.href = mainAppUrl;
+            }
         });
 
-        const showError = (msg) => {
-            errorMessage.textContent = msg.replace('Firebase: ', '');
+        // --- UI Mode Toggle ---
+        let isCreateAccountMode = false;
+        toggleModeBtn.addEventListener('click', () => {
+            isCreateAccountMode = !isCreateAccountMode;
+            loginForm.classList.toggle('create-account-mode', isCreateAccountMode);
+            
+            if (isCreateAccountMode) {
+                toggleModeBtn.textContent = 'Already have an account? Sign in';
+                passwordInput.required = true;
+            } else {
+                toggleModeBtn.textContent = 'Need an account? Sign up';
+                // FIX: Set required to true for password on Sign In as well.
+                passwordInput.required = true; 
+            }
+            hideError(); // Hide any previous errors
+        });
+
+        // --- Show/Hide Error Message ---
+        function showError(message) {
+            // Firebase gives wordy errors, let's simplify them
+            let friendlyMessage = message;
+            if (message.includes('auth/invalid-email')) {
+                friendlyMessage = 'Please enter a valid email address.';
+            } else if (message.includes('auth/user-not-found') || message.includes('auth/wrong-password') || message.includes('auth/invalid-credential')) {
+                friendlyMessage = 'Invalid email or password. Please try again.';
+            } else if (message.includes('auth/email-already-in-use')) {
+                friendlyMessage = 'This email is already in use. Please sign in or use a different email.';
+            } else if (message.includes('auth/weak-password')) {
+                friendlyMessage = 'Password is too weak. It must be at least 6 characters long.';
+            } else if (message.includes('auth/popup-closed-by-user')) {
+                friendlyMessage = 'Sign-in window closed. Please try again.';
+            } else if (message.includes('auth/network-request-failed')) {
+                friendlyMessage = 'Network error. Please check your connection.';
+            }
+
+            errorMessage.textContent = friendlyMessage;
             errorMessage.classList.add('visible');
-        };
+        }
 
-        const hideError = () => errorMessage.classList.remove('visible');
+        function hideError() {
+            errorMessage.classList.remove('visible');
+        }
+        
+        // --- Email/Password Sign In ---
+        loginBtn.addEventListener('click', async () => {
+            hideError();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password.');
+                return;
+            }
 
-        // Auth Actions
-        document.getElementById('loginBtn').onclick = async () => {
             try {
-                await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-                window.location.href = getRedirectUrl();
-            } catch (e) { showError(e.message); }
-        };
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('Sign in successful:', userCredential.user);
+                window.location.href = mainAppUrl; // MOD: Redirect to dynamic URL
+            } catch (error) {
+                console.error('Sign in error:', error.message);
+                showError(error.message);
+            }
+        });
 
-        document.getElementById('createAccountBtn').onclick = async () => {
+        // --- Email/Password Create Account ---
+        createAccountBtn.addEventListener('click', async () => {
+            hideError();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('Please enter both email and password to sign up.');
+                return;
+            }
+            
             try {
-                await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-                window.location.href = getRedirectUrl();
-            } catch (e) { showError(e.message); }
-        };
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log('Account creation successful:', userCredential.user);
+                window.location.href = mainAppUrl; // MOD: Redirect to dynamic URL
+            } catch (error) {
+                console.error('Create account error:', error.message);
+                showError(error.message);
+            }
+        });
 
-        document.getElementById('googleLoginBtn').onclick = async () => {
+        // --- Google Sign In ---
+        googleLoginBtn.addEventListener('click', async () => {
+            hideError();
             try {
-                await signInWithPopup(auth, googleProvider);
-                window.location.href = getRedirectUrl();
-            } catch (e) { showError(e.message); }
-        };
+                const result = await signInWithPopup(auth, googleProvider);
+                console.log('Google sign in successful:', result.user);
+                window.location.href = mainAppUrl; // MOD: Redirect to dynamic URL
+            } catch (error) {
+                console.error('Google sign in error:', error.message);
+                showError(error.message);
+            }
+        });
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) window.location.href = getRedirectUrl();
+        // --- Disable Dev Tools (from original file) ---
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
         });
     </script>
 </body>
