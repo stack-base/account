@@ -86,7 +86,17 @@
         .login-card {
             background-color: var(--bg-card); padding: 2rem 3rem; box-shadow: var(--shadow);
             float: inline-end; width: 25%; height: 100vh; min-width: 420px; max-width: 500px;
+            /* Flex centering for the modal container */
             display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
+            border-radius: 0px; /* RESTORED: Square corners for desktop sidebar look */
+        }
+        
+        /* RESTORED: Wrapper to ensure content stays centered */
+        .login-view-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
         }
 
         @media screen and (max-width: 768px) {
@@ -153,6 +163,7 @@
             background-color: var(--bg-card); z-index: 100;
             display: none; flex-direction: column; justify-content: center; align-items: center;
             padding: 2rem; text-align: center;
+            border-radius: inherit; 
         }
         
         #password-setup-modal.active { display: flex; animation: fadeIn 0.3s ease; }
@@ -160,7 +171,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
-        .modal-desc { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5; }
+        .modal-desc { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5; max-width: 350px; }
         
         .btn-secondary { background-color: transparent; color: var(--text-muted); border: 1px solid var(--btn-border); }
         .btn-secondary:hover { background-color: var(--bg-input); color: var(--text-main); }
@@ -170,7 +181,7 @@
     <div id="login-page" class="login-page">
         <div class="login-card">
             
-            <div id="main-login-view" style="width: 100%;">
+            <div id="main-login-view" class="login-view-wrapper">
                 <a href="https://stack-base.github.io/home" class="logo-link">
                     <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="StackBase Logo" class="login-logo">
                     <h1 class="login-brand-name">StackBase</h1>
@@ -207,7 +218,7 @@
 
             <div id="password-setup-modal">
                 <h2 class="modal-title">Secure your account</h2>
-                <p class="modal-desc">You've successfully signed in! Would you like to set a password so you can also log in with your email directly?</p>
+                <p class="modal-desc">You've successfully signed in! Create a password to access your account using your email address as well.</p>
                 
                 <div class="login-form" style="width: 100%;">
                     <div class="input-group">
@@ -224,7 +235,7 @@
 
             <div id="error-message">Invalid username or password.</div>
         </div>
-        <p style="position: fixed; bottom: 10px; left: 10px; color: white; font-size: 10px; ">StackBase Single Sign-On v1.2.0</p>
+        <p style="position: fixed; bottom: 10px; left: 10px; color: white; font-size: 10px; ">StackBase Single Sign-On v1.3.1</p>
     </div>
     
     <script type="module">
@@ -253,7 +264,6 @@
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // Standard DOM Elements
         const loginForm = document.getElementById('login-form');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -264,14 +274,10 @@
         const errorMessage = document.getElementById('error-message');
         const togglePasswordIcon = document.getElementById('toggle-password-icon');
         
-        // New Modal Elements
         const passwordSetupModal = document.getElementById('password-setup-modal');
         const newPasswordInput = document.getElementById('new-password');
         const savePasswordBtn = document.getElementById('savePasswordBtn');
         const skipPasswordBtn = document.getElementById('skipPasswordBtn');
-
-        // Flag to prevent auto-redirect during Google Login flow
-        let isHandlingGoogleLogin = false;
 
         function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
@@ -283,59 +289,49 @@
         }
         const mainAppUrl = getRedirectUrl();
 
-        // 1. Auth State Listener
         onAuthStateChanged(auth, (user) => {
-            // If we are currently handling the Google Login flow manually, ignore this listener
-            // to prevent premature redirect before showing the password modal.
-            if (isHandlingGoogleLogin) return;
-
+            if (sessionStorage.getItem('pendingGoogleAuth')) {
+                console.log("Hold on! Pending Google Auth check...");
+                return; 
+            }
             if (user) {
                 console.log('User logged in. Redirecting...');
                 window.location.href = mainAppUrl;
             }
         });
 
-        // 2. Google Sign In (Logic Updated)
         googleLoginBtn.addEventListener('click', async () => {
             hideError();
-            isHandlingGoogleLogin = true; // Stop onAuthStateChanged from redirecting immediately
-
+            sessionStorage.setItem('pendingGoogleAuth', 'true');
             try {
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
-                
-                // Check if user has a password provider linked
                 const hasPassword = user.providerData.some(p => p.providerId === 'password');
-
                 if (!hasPassword) {
-                    // Show the "Set Password" modal
-                    document.getElementById('main-login-view').style.display = 'none'; // Hide main form
-                    passwordSetupModal.classList.add('active'); // Show modal
+                    document.getElementById('main-login-view').style.display = 'none';
+                    passwordSetupModal.classList.add('active');
                 } else {
-                    // User already has password linked, redirect.
+                    sessionStorage.removeItem('pendingGoogleAuth');
                     window.location.href = mainAppUrl;
                 }
             } catch (error) {
-                isHandlingGoogleLogin = false; // Reset flag on error
+                sessionStorage.removeItem('pendingGoogleAuth');
                 showError(error.message);
             }
         });
 
-        // 3. New "Save Password" Logic
         savePasswordBtn.addEventListener('click', async () => {
             const newPassword = newPasswordInput.value;
             if (!newPassword || newPassword.length < 6) {
                 showError("Password must be at least 6 characters.");
                 return;
             }
-
             savePasswordBtn.textContent = "Saving...";
-            
             try {
                 const user = auth.currentUser;
                 if (user) {
                     await updatePassword(user, newPassword);
-                    console.log("Password linked successfully");
+                    sessionStorage.removeItem('pendingGoogleAuth');
                     window.location.href = mainAppUrl;
                 }
             } catch (error) {
@@ -345,18 +341,15 @@
             }
         });
 
-        // 4. "Skip" Logic
         skipPasswordBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('pendingGoogleAuth');
             window.location.href = mainAppUrl;
         });
 
-
-        // --- UI Logic (Toggles & Inputs) ---
         let isCreateAccountMode = false;
         toggleModeBtn.addEventListener('click', () => {
             isCreateAccountMode = !isCreateAccountMode;
             loginForm.classList.toggle('create-account-mode', isCreateAccountMode);
-            
             if (isCreateAccountMode) {
                 toggleModeBtn.textContent = 'Already have an account? Sign in';
                 loginBtn.style.display = 'none';
@@ -392,14 +385,11 @@
             else if (message.includes('auth/email-already-in-use')) friendlyMessage = 'This email is already in use. Please sign in.';
             else if (message.includes('auth/weak-password')) friendlyMessage = 'Password must be at least 6 characters.';
             else if (message.includes('auth/requires-recent-login')) friendlyMessage = 'Please sign in again to set a password.';
-            
             errorMessage.textContent = friendlyMessage;
             errorMessage.classList.add('visible');
         }
-
         function hideError() { errorMessage.classList.remove('visible'); }
         
-        // --- Standard Email/Pass Auth ---
         loginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             hideError();
@@ -409,7 +399,6 @@
             try {
                 loginBtn.textContent = "Signing in...";
                 await signInWithEmailAndPassword(auth, email, password);
-                // Redirect handled by onAuthStateChanged
             } catch (error) {
                 loginBtn.textContent = "Sign In";
                 showError(error.message);
@@ -425,14 +414,12 @@
             try {
                 createAccountBtn.textContent = "Creating...";
                 await createUserWithEmailAndPassword(auth, email, password);
-                // Redirect handled by onAuthStateChanged
             } catch (error) {
                 createAccountBtn.textContent = "Create Account";
                 showError(error.message);
             }
         });
 
-        // Disable Dev Tools
         document.addEventListener('keydown', function (e) {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
