@@ -85,19 +85,16 @@
             color: var(--text-main);
             transition: background-color var(--transition-speed);
             overflow-x: hidden;
-            /* Allow vertical scroll so URL bar can hide */
             overflow-y: auto; 
         }
 
         .login-page {
             position: relative;
-            /* 100.1vh forces the page to be just slightly taller than screen, enabling swipe-to-hide address bar */
             min-height: 100.1vh; 
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
-            /* Removed overflow:hidden to allow body scroll */
         }
 
         .login-page::before {
@@ -109,7 +106,6 @@
             background-size: cover;
             z-index: -1;
             transform: scale(1.05);
-            /* Ensure background stays fixed during scroll */
             position: fixed; 
         }
 
@@ -119,7 +115,7 @@
             box-shadow: var(--shadow);
             float: inline-end;
             width: 25%;
-            height: 100vh; /* Full height on desktop */
+            height: 100vh;
             min-width: 420px;
             max-width: 500px;
             display: flex;
@@ -135,6 +131,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* Added transition for smooth view switching */
+            transition: opacity 0.3s ease; 
         }
 
         .logo-link {
@@ -272,25 +270,23 @@
 
         #error-message.visible { visibility: visible; opacity: 1; }
 
+        /* REFACTORED: Now a static view inside the card, not a fixed overlay */
         #password-setup-modal {
-            position: fixed; /* Changed to fixed to cover even when scrolled */
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--bg-card);
-            z-index: 100;
+            width: 100%; /* Fill the card width */
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
             text-align: center;
+            /* No padding needed here as the card provides it */
         }
         
         #password-setup-modal.active {
             display: flex;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .modal-title {
             font-size: 1.5rem;
@@ -304,7 +300,7 @@
             margin-bottom: 2rem;
             font-size: 0.95rem;
             line-height: 1.5;
-            max-width: 350px;
+            max-width: 100%; /* Prevent text overflow */
         }
         
         .btn-secondary {
@@ -333,7 +329,6 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                /* Add padding bottom to allow scrolling past the content */
                 padding: 1rem;
                 padding-bottom: 4rem; 
                 background-image: none;
@@ -343,7 +338,6 @@
             .login-card {
                 float: none;
                 height: auto;
-                /* Remove forced viewport height on mobile so body can scroll */
                 min-height: auto; 
                 width: 100%;
                 padding: 30px;
@@ -400,7 +394,7 @@
                 <h2 class="modal-title">Secure your account</h2>
                 <p class="modal-desc">You've successfully signed in! Create a password to access your account using your email address as well.</p>
                 
-                <div class="login-form" style="width: 100%;">
+                <div class="login-form">
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
