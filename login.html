@@ -85,19 +85,19 @@
             color: var(--text-main);
             transition: background-color var(--transition-speed);
             overflow-x: hidden;
-            overscroll-behavior-y: none;
+            /* Allow vertical scroll so URL bar can hide */
+            overflow-y: auto; 
         }
 
         .login-page {
             position: relative;
-            min-height: 100vh;
-            min-height: 100dvh;
-            user-select: none;
-            overflow: hidden;
+            /* 100.1vh forces the page to be just slightly taller than screen, enabling swipe-to-hide address bar */
+            min-height: 100.1vh; 
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
+            /* Removed overflow:hidden to allow body scroll */
         }
 
         .login-page::before {
@@ -109,6 +109,8 @@
             background-size: cover;
             z-index: -1;
             transform: scale(1.05);
+            /* Ensure background stays fixed during scroll */
+            position: fixed; 
         }
 
         .login-card {
@@ -117,8 +119,7 @@
             box-shadow: var(--shadow);
             float: inline-end;
             width: 25%;
-            height: 100vh;
-            height: 100dvh;
+            height: 100vh; /* Full height on desktop */
             min-width: 420px;
             max-width: 500px;
             display: flex;
@@ -272,7 +273,7 @@
         #error-message.visible { visibility: visible; opacity: 1; }
 
         #password-setup-modal {
-            position: absolute;
+            position: fixed; /* Changed to fixed to cover even when scrolled */
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--bg-card);
             z-index: 100;
@@ -282,7 +283,6 @@
             align-items: center;
             padding: 2rem;
             text-align: center;
-            border-radius: inherit;
         }
         
         #password-setup-modal.active {
@@ -324,16 +324,18 @@
             left: calc(10px + env(safe-area-inset-left));
             color: white;
             font-size: 10px;
+            z-index: 10;
         }
 
         @media screen and (max-width: 768px) {
             .login-page {
                 display: flex;
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                /* Add padding bottom to allow scrolling past the content */
                 padding: 1rem;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
+                padding-bottom: 4rem; 
                 background-image: none;
                 background-color: var(--bg-body);
             }
@@ -341,12 +343,14 @@
             .login-card {
                 float: none;
                 height: auto;
+                /* Remove forced viewport height on mobile so body can scroll */
+                min-height: auto; 
                 width: 100%;
-                min-width: 0;
                 padding: 30px;
                 border-radius: 12px;
                 box-shadow: none;
                 max-width: 400px;
+                margin: auto 0;
             }
             .logo-link { margin-bottom: 40px; }
             .version-tag { color: var(--text-muted); }
