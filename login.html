@@ -12,43 +12,89 @@
     <title>StackBase Single Sign-On</title>
     <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
 
-    <style>
-        :root {
-            --transition-speed-fast: 0.2s;
-            --transition-speed-normal: 0.3s;
-            --navbar-background-1: white;
-            --background-1: white;
-            --background-2: #f0f2f5;
-            --card-background-1: white;
-            --text-color-1: #050505;
-            --text-color-2: #65676b;
-            --shadow-1: 0 2px 6px 0 rgba(136, 148, 171, 0.2), 0 24px 20px -24px rgba(71, 82, 107, 0.1);
-            --shadow-2: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-            --button-background-1: #1877f2;
-            --button-background-2: #e4e6eb;
-            --button-text-1: #ffffff;
-            --button-text-2: #050505;
+    <script>
+        (function() {
+            // Check LocalStorage > System Preference
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            --button-background-secondary: #34a853; 
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark-mode');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark-mode');
+            }
+        })();
+    </script>
+
+    <style>
+        /* 1. Base Variables (Light Mode Default) */
+        :root {
+            --transition-speed: 0.3s;
+            --bg-body: white;
+            --bg-card: white;
+            --bg-input: #f0f2f5;
+            --text-main: #050505;
+            --text-muted: #65676b;
+            --text-button: #ffffff;
+            --shadow: 0 2px 6px rgba(136, 148, 171, 0.2), 0 24px 20px -24px rgba(71, 82, 107, 0.1);
+            --shadow-hover: 0 2px 10px rgba(0, 0, 0, 0.1);
+            
+            --btn-primary: #1877f2;
+            --btn-border: #e4e6eb;
+            --btn-brand: #050505;
+            --btn-green: #34a853; 
         }
 
-        body.dark-mode {
-            --navbar-background-1: #18191a;
-            --background-1: black;
-            --background-2: #18191a;
-            --card-background-1: #242526;
-            --text-color-1: white;
-            --text-color-2: #b0b3b8;
-            --shadow-1: 0px 0px 8px 0px #111;
-            --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.25);
+        /* 2. Dark Mode Definitions (Mixin) */
+        /* This applies if: System is Dark OR Class is .dark-mode OR Class is .dark */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: black;
+                --bg-card: #242526;
+                --bg-input: #18191a;
+                --text-main: white;
+                --text-muted: #b0b3b8;
+                --shadow: 0px 0px 8px 0px #111;
+                --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.25);
+                
+                --btn-primary: #2d88ff;
+                --btn-border: #3a3b3c;
+                --btn-brand: #e4e6eb;
+                --btn-green: #2ecc71;
+            }
+        }
 
-            --button-background-1: #2d88ff;
-            --button-background-2: #3a3b3c;
-            --button-text-1: #ffffff;
-            --button-text-2: #e4e6eb;
+        /* 3. Manual Override: Force Dark (even if system is light) */
+        body.dark-mode, html.dark {
+            --bg-body: black;
+            --bg-card: #242526;
+            --bg-input: #18191a;
+            --text-main: white;
+            --text-muted: #b0b3b8;
+            --shadow: 0px 0px 8px 0px #111;
+            --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.25);
             
-            --button-background-secondary: #2ecc71;
+            --btn-primary: #2d88ff;
+            --btn-border: #3a3b3c;
+            --btn-brand: #e4e6eb;
+            --btn-green: #2ecc71;
+        }
+
+        /* 4. Manual Override: Force Light (even if system is dark) */
+        body.light-mode, html.light {
+            --bg-body: white;
+            --bg-card: white;
+            --bg-input: #f0f2f5;
+            --text-main: #050505;
+            --text-muted: #65676b;
+            --shadow: 0 2px 6px rgba(136, 148, 171, 0.2), 0 24px 20px -24px rgba(71, 82, 107, 0.1);
+            
+            --btn-primary: #1877f2;
+            --btn-border: #e4e6eb;
+            --btn-brand: #050505;
+            --btn-green: #34a853; 
         }
 
         /* General Reset */
@@ -56,9 +102,9 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--background-1);
-            color: var(--text-color-1);
-            transition: background-color var(--transition-speed-normal) ease, color var(--transition-speed-normal) ease;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
             overflow-x: hidden;
         }
 
@@ -81,9 +127,9 @@
         }
 
         .login-card {
-            background-color: var(--card-background-1);
+            background-color: var(--bg-card);
             padding: 2rem 3rem;
-            box-shadow: var(--shadow-1);
+            box-shadow: var(--shadow);
             float: inline-end;
             width: 25%;
             height: 100vh;
@@ -101,166 +147,83 @@
                 justify-content: center;
                 align-items: center;
                 padding: 1rem;
-                background-color: var(--background-1);
+                background-color: var(--bg-body);
                 background-image: none;
             }
             .login-page::before { display: none; }
             .login-card {
-                float: none; 
-                height: auto;
-                width: 100%;
-                min-width: 0;
-                padding: 30px;
-                border-radius: 12px;
-                box-shadow: none;
-                max-width: 400px;
+                float: none; height: auto; width: 100%; min-width: 0;
+                padding: 30px; border-radius: 12px; box-shadow: none; max-width: 400px;
             }
             .logo-link { margin-bottom: 40px; }
         }
 
-        .logo-link {
-            text-decoration: none;
-            display: inline-flex;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 50px;
-        }
-        
+        .logo-link { text-decoration: none; display: inline-flex; gap: 1rem; align-items: center; margin-bottom: 50px; }
         .login-logo { width: 60px; }
-
-        .login-brand-name {
-            color: var(--button-text-2);
-            font-size: 2.2rem;
-            font-family: 'Roboto', sans-serif;
-        }
-
+        .login-brand-name { color: var(--text-muted); font-size: 2.2rem; font-family: 'Roboto', sans-serif; } /* Brand uses muted color now */
         .login-form { width: 100%; }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
         .input-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            color: var(--text-color-2);
-            transition: color var(--transition-speed-normal) ease;
-            cursor: pointer;
-            z-index: 2;
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 20px; height: 20px; color: var(--text-muted);
+            transition: color var(--transition-speed) ease; cursor: pointer; z-index: 2;
         }
 
         .login-form input {
-            width: 100%;
-            padding: 14px 18px 14px 50px;
-            border: 1px solid var(--button-background-2);
+            width: 100%; padding: 14px 18px 14px 50px;
+            border: 1px solid var(--btn-border);
             border-radius: 30px;
-            color: var(--text-color-1);
-            font-size: 16px;
-            font-weight: 500;
-            background-color: var(--background-2);
-            transition: all var(--transition-speed-normal);
+            color: var(--text-main);
+            font-size: 16px; font-weight: 500;
+            background-color: var(--bg-input);
+            transition: all var(--transition-speed);
         }
 
         .login-form input:focus {
-            outline: none;
-            background-color: var(--background-1);
-            border-color: var(--button-background-1);
+            outline: none; background-color: var(--bg-body); border-color: var(--btn-primary);
         }
-
-        .input-group:focus-within .input-icon { color: var(--button-background-1); }
+        .input-group:focus-within .input-icon { color: var(--btn-primary); }
 
         .form-action-button {
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-speed-normal) ease;
-            margin-top: 15px;
-            width: 100%;
+            padding: 14px; border: none; border-radius: 40px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            margin-top: 15px; width: 100%;
         }
 
-        .login {
-            background-color: var(--button-background-1);
-            color: var(--button-text-1);
-        }
-        
+        .login { background-color: var(--btn-primary); color: var(--text-button); }
         .login:hover { opacity: 0.9; }
 
-        .create-account {
-            background-color: var(--button-background-secondary);
-            color: var(--button-text-1);
-        }
+        .create-account { background-color: var(--btn-green); color: var(--text-button); }
         .create-account:hover { opacity: 0.9; }
 
         .continue-google {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background-color: var(--background-1);
-            color: var(--text-color-2);
-            border: 1px solid var(--button-background-2);
-            margin-top: 0;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background-color: var(--bg-body); color: var(--text-muted);
+            border: 1px solid var(--btn-border); margin-top: 0;
         }
-        
-        .continue-google:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-2);
-        }
-
+        .continue-google:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
         .form-action-button:active { transform: scale(0.98); }
         
-        /* Button Toggling Logic */
         .login-form .login { display: inline-block; }
         .login-form .create-account { display: none; }
-        
         .login-form.create-account-mode .login { display: none; }
         .login-form.create-account-mode .create-account { display: inline-block; }
 
-        .separator {
-             margin: 1.5rem 0;
-             color: var(--text-color-2);
-             text-align: center;
-             font-size: 0.9rem;
-        }
-
+        .separator { margin: 1.5rem 0; color: var(--text-muted); text-align: center; font-size: 0.9rem; }
         .toggle-mode {
-            color: var(--button-background-1);
-            background: none;
-            border: none;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            width: 100%;
-            text-align: center;
+            color: var(--btn-primary); background: none; border: none; padding: 0;
+            font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+            cursor: pointer; margin-top: 1.5rem; width: 100%; text-align: center;
         }
         .toggle-mode:hover { text-decoration: underline; }
 
         #error-message {
-            color: #ff3b30;
-            margin-top: 16px;
-            font-size: 14px;
-            text-align: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity var(--transition-speed-normal);
+            color: #ff3b30; margin-top: 16px; font-size: 14px; text-align: center;
+            visibility: hidden; opacity: 0; transition: opacity var(--transition-speed);
         }
-        
-        #error-message.visible {
-            visibility: visible;
-            opacity: 1;
-        }
+        #error-message.visible { visibility: visible; opacity: 1; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -301,19 +264,12 @@
             </form>
             <div id="error-message">Invalid username or password.</div>
         </div>
-        <p style="position: fixed; bottom: 10px; left: 10px; color: white; font-size: 10px; ">StackBase Single Sign-On v1.1.0</p>
+        <p style="position: fixed; bottom: 10px; left: 10px; color: white; font-size: 10px; ">StackBase Single Sign-On v1.1.1</p>
     </div>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            signInWithPopup,
-            GoogleAuthProvider,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
@@ -339,7 +295,21 @@
         const errorMessage = document.getElementById('error-message');
         const togglePasswordIcon = document.getElementById('toggle-password-icon');
 
-        // --- Handle Redirect URL ---
+        // --- Theme Sync Logic (Added for Robustness) ---
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            const newColorScheme = event.matches ? "dark" : "light";
+            // Only auto-switch if user hasn't manually overridden it via localStorage
+            if (!localStorage.getItem('theme')) {
+                if(newColorScheme === "dark") {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+
         function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
             const redirectUrl = params.get('redirectUrl');
@@ -353,15 +323,14 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log('User already logged in. Redirecting...');
+                console.log('User logged in. Redirecting...');
                 window.location.href = mainAppUrl;
             }
         });
 
-        // --- UI Logic ---
+        // UI Logic
         let isCreateAccountMode = false;
 
-        // Toggle between Login and Sign Up
         toggleModeBtn.addEventListener('click', () => {
             isCreateAccountMode = !isCreateAccountMode;
             loginForm.classList.toggle('create-account-mode', isCreateAccountMode);
@@ -378,25 +347,20 @@
             hideError();
         });
 
-        // Toggle Password Visibility
         togglePasswordIcon.addEventListener('click', () => {
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
-                togglePasswordIcon.style.color = "var(--button-background-1)";
+                togglePasswordIcon.style.color = "var(--btn-primary)";
             } else {
                 passwordInput.type = "password";
-                togglePasswordIcon.style.color = "var(--text-color-2)";
+                togglePasswordIcon.style.color = "var(--text-muted)";
             }
         });
 
-        // Handle Form Submit (Enter Key)
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (isCreateAccountMode) {
-                createAccountBtn.click();
-            } else {
-                loginBtn.click();
-            }
+            if (isCreateAccountMode) createAccountBtn.click();
+            else loginBtn.click();
         });
 
         function showError(message) {
@@ -410,69 +374,44 @@
             errorMessage.classList.add('visible');
         }
 
-        function hideError() {
-            errorMessage.classList.remove('visible');
-        }
+        function hideError() { errorMessage.classList.remove('visible'); }
         
-        // --- Auth Functions ---
-        
-        // 1. Sign In
+        // Auth Functions
         loginBtn.addEventListener('click', async (e) => {
-            e.preventDefault(); // Prevent form submit refresh
+            e.preventDefault();
             hideError();
             const email = emailInput.value;
             const password = passwordInput.value;
-            
-            if (!email || !password) {
-                showError('Please enter both email and password.');
-                return;
-            }
-
+            if (!email || !password) { showError('Please enter both email and password.'); return; }
             try {
                 loginBtn.textContent = "Signing in...";
                 await signInWithEmailAndPassword(auth, email, password);
-                // Redirect happens in onAuthStateChanged
             } catch (error) {
-                console.error(error);
                 loginBtn.textContent = "Sign In";
                 showError(error.message);
             }
         });
 
-        // 2. Create Account
         createAccountBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             hideError();
             const email = emailInput.value;
             const password = passwordInput.value;
-
-            if (!email || !password) {
-                showError('Please enter both email and password.');
-                return;
-            }
-            
+            if (!email || !password) { showError('Please enter both email and password.'); return; }
             try {
                 createAccountBtn.textContent = "Creating...";
                 await createUserWithEmailAndPassword(auth, email, password);
-                // Redirect happens in onAuthStateChanged
             } catch (error) {
-                console.error(error);
                 createAccountBtn.textContent = "Create Account";
                 showError(error.message);
             }
         });
 
-        // 3. Google Sign In
         googleLoginBtn.addEventListener('click', async () => {
             hideError();
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (error) {
-                showError(error.message);
-            }
+            try { await signInWithPopup(auth, googleProvider); } catch (error) { showError(error.message); }
         });
 
-        // Disable Dev Tools
         document.addEventListener('keydown', function (e) {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
