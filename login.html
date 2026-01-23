@@ -30,7 +30,6 @@
     </script>
 
     <style>
-        /* --- CSS VARIABLES --- */
         :root {
             --bg-page: #ffffff;
             --bg-panel: #ffffff;
@@ -76,7 +75,6 @@
 
         button { font-family: inherit; }
 
-        /* --- LAYOUT GRID --- */
         .layout-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -84,7 +82,6 @@
             width: 100%;
         }
 
-        /* --- LEFT SIDE: HERO --- */
         .hero-section {
             display: none;
             position: relative;
@@ -107,7 +104,6 @@
         .hero-text h2 { font-size: 2.6rem; margin-bottom: 1rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
         .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 600px; line-height: 1.6; font-weight: 400; }
 
-        /* --- RIGHT SIDE: FORM --- */
         .auth-section {
             background-color: var(--bg-panel);
             display: flex;
@@ -125,21 +121,19 @@
             position: relative;
         }
 
-        /* View Containers */
         .view-wrapper {
             width: 100%;
             animation: fadeIn 0.4s ease-out;
         }
         
         .hidden-view { display: none; }
-        .hidden { display: none; } /* Utility for toggling elements */
+        .hidden { display: none; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- HEADER & BRAND --- */
         .brand-header {
             display: flex;
             align-items: center;
@@ -154,7 +148,6 @@
         .auth-title { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
         .auth-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5; }
 
-        /* --- FORM ELEMENTS --- */
         .input-group { position: relative; margin-bottom: 1.25rem; }
         
         .input-icon {
@@ -226,7 +219,6 @@
         }
         .back-link:hover { color: var(--text-main); text-decoration: underline; }
 
-        /* --- BUTTONS --- */
         .btn {
             width: 100%;
             padding: 14px;
@@ -245,7 +237,6 @@
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover { background-color: var(--primary-hover); }
         .btn-primary:active { transform: scale(0.98); }
-        
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .btn-google {
@@ -290,7 +281,6 @@
         }
         .toggle-mode button:hover { text-decoration: underline; }
 
-        /* --- THEME TOGGLE --- */
         .theme-fab {
             position: absolute;
             top: 20px;
@@ -310,7 +300,6 @@
         }
         .theme-fab:hover { background-color: var(--border-color); }
 
-        /* --- TOAST & SPINNER --- */
         #toast-container { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: max-content; }
         .toast { background: var(--bg-panel); color: var(--text-main); padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; font-size: 0.9rem; font-weight: 500; opacity: 0; transform: translateY(-20px); transition: all 0.3s; border: 1px solid var(--border-color); }
         .toast.visible { opacity: 1; transform: translateY(0); }
@@ -323,7 +312,6 @@
 
         .version-tag { position: absolute; bottom: 20px; right: 30px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
-        /* --- RESPONSIVE QUERIES --- */
         @media (min-width: 769px) {
             .hero-section { display: flex; }
             .theme-fab { top: 40px; right: 40px; }
@@ -480,7 +468,7 @@
                 </div>
             </div>
             
-            <p class="version-tag">StackBase SSO v1.0.3</p>
+            <p class="version-tag">StackBase SSO v1.0.2</p>
         </div>
     </div>
 
@@ -541,7 +529,6 @@
             togglePassword: document.getElementById('toggle-password'),
             toggleConfirmPassword: document.getElementById('toggle-confirm-password'),
             
-            // Password Setup Elements
             newPasswordInput: document.getElementById('new-password'),
             confirmNewPasswordInput: document.getElementById('confirm-new-password'),
             toggleNewPass: document.getElementById('toggle-new-pass'),
@@ -591,19 +578,16 @@
         }
 
         function switchView(viewName) {
-            // Hide all first
             dom.mainView.classList.add('hidden-view');
             dom.forgotView.classList.add('hidden-view');
             dom.passwordSetupView.classList.add('hidden-view');
 
-            // Show specific
             if (viewName === 'forgot') {
                 dom.forgotView.classList.remove('hidden-view');
                 if(dom.emailInput.value) dom.resetEmailInput.value = dom.emailInput.value;
             } else if (viewName === 'password-setup') {
                 dom.passwordSetupView.classList.remove('hidden-view');
             } else {
-                // Default to login
                 dom.mainView.classList.remove('hidden-view');
             }
         }
@@ -616,7 +600,6 @@
             if (user) window.location.href = mainAppUrl;
         });
 
-        // Toggle Password Logic
         function setupToggle(icon, input) {
             icon.addEventListener('click', () => {
                 const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -676,7 +659,6 @@
             try {
                 const result = await signInWithPopup(auth, googleProvider);
                 if (!result.user.providerData.some(p => p.providerId === 'password')) {
-                    // Switch to the new inline view instead of modal
                     switchView('password-setup');
                 } else {
                     sessionStorage.removeItem('pendingGoogleAuth');
