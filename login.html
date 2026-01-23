@@ -245,6 +245,8 @@
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover { background-color: var(--primary-hover); }
         .btn-primary:active { transform: scale(0.98); }
+        
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .btn-google {
             background-color: transparent;
@@ -319,11 +321,6 @@
         .btn-loading span { display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
-        .modal-card { background: var(--bg-panel); padding: 2.5rem; border-radius: 20px; width: 100%; max-width: 440px; text-align: center; box-shadow: var(--shadow-card); border: 1px solid var(--border-color); }
-        
         .version-tag { position: absolute; bottom: 20px; right: 30px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
         /* --- RESPONSIVE QUERIES --- */
@@ -451,35 +448,39 @@
 
                     <button id="backToLoginBtn" class="back-link">Back to Sign In</button>
                 </div>
+
+                <div id="auth-password-setup-view" class="view-wrapper hidden-view">
+                    <h1 class="auth-title">Secure Account</h1>
+                    <p class="auth-subtitle">Set a password to access your account via email/password in the future.</p>
+                    
+                    <div class="input-group">
+                        <input type="password" id="new-password" placeholder="Create Password" required>
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <svg id="toggle-new-pass" class="input-icon toggle-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" id="confirm-new-password" placeholder="Confirm Password" required>
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <svg id="toggle-confirm-new-pass" class="input-icon toggle-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+
+                    <button id="savePasswordBtn" class="btn btn-primary" style="margin-bottom: 0.5rem;">Save Password</button>
+                    <button id="skipPasswordBtn" class="back-link">Skip for Now</button>
+                </div>
             </div>
             
-            <p class="version-tag">StackBase SSO v1.0.2</p>
-        </div>
-    </div>
-
-    <div id="password-setup-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 class="auth-title">Secure your account</h2>
-            <p class="auth-subtitle">Set a password to access your account via email/password in the future.</p>
-            
-            <div class="input-group">
-                <input type="password" id="new-password" placeholder="Create Password" required>
-                <svg id="toggle-new-pass" class="input-icon toggle-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="right: 18px; left: auto;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </div>
-
-            <div class="input-group">
-                <input type="password" id="confirm-new-password" placeholder="Confirm Password" required>
-                <svg id="toggle-confirm-new-pass" class="input-icon toggle-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="right: 18px; left: auto;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </div>
-
-            <button id="savePasswordBtn" class="btn btn-primary" style="margin-bottom: 10px;">Save Password</button>
-            <button id="skipPasswordBtn" class="btn btn-secondary">Skip for Now</button>
+            <p class="version-tag">StackBase SSO v1.0.3</p>
         </div>
     </div>
 
@@ -515,32 +516,38 @@
         const dom = {
             mainView: document.getElementById('auth-main-view'),
             forgotView: document.getElementById('auth-forgot-view'),
+            passwordSetupView: document.getElementById('auth-password-setup-view'),
+            
             loginForm: document.getElementById('login-form'),
             resetForm: document.getElementById('reset-form'),
+            
             emailInput: document.getElementById('email'),
             passwordInput: document.getElementById('password'),
             confirmPasswordInput: document.getElementById('confirm-password'),
             confirmPasswordContainer: document.getElementById('confirm-password-container'),
             resetEmailInput: document.getElementById('reset-email'),
+            
             submitBtn: document.getElementById('submitBtn'),
             btnText: document.getElementById('btn-text'),
             googleBtn: document.getElementById('googleLoginBtn'),
             toggleModeBtn: document.getElementById('toggleModeBtn'),
             sendResetBtn: document.getElementById('sendResetBtn'),
             backToLoginBtn: document.getElementById('backToLoginBtn'),
+            
             toggleText: document.getElementById('toggle-text'),
             pageTitle: document.getElementById('page-title'),
             pageSubtitle: document.getElementById('page-subtitle'),
+            
             togglePassword: document.getElementById('toggle-password'),
             toggleConfirmPassword: document.getElementById('toggle-confirm-password'),
             
-            // Modal Elements
-            passwordModal: document.getElementById('password-setup-modal'),
+            // Password Setup Elements
             newPasswordInput: document.getElementById('new-password'),
             confirmNewPasswordInput: document.getElementById('confirm-new-password'),
             toggleNewPass: document.getElementById('toggle-new-pass'),
             toggleConfirmNewPass: document.getElementById('toggle-confirm-new-pass'),
             savePasswordBtn: document.getElementById('savePasswordBtn'),
+            skipPasswordBtn: document.getElementById('skipPasswordBtn'),
             
             forgotLink: document.getElementById('forgot-password-link'),
             themeToggle: document.getElementById('themeToggle'),
@@ -577,17 +584,26 @@
             } else {
                 btn.classList.remove('btn-loading');
                 btn.disabled = false;
-                btn.querySelector('span').textContent = defaultText;
+                const span = btn.querySelector('span');
+                if (span) span.textContent = defaultText;
+                else btn.textContent = defaultText;
             }
         }
 
         function switchView(viewName) {
+            // Hide all first
+            dom.mainView.classList.add('hidden-view');
+            dom.forgotView.classList.add('hidden-view');
+            dom.passwordSetupView.classList.add('hidden-view');
+
+            // Show specific
             if (viewName === 'forgot') {
-                dom.mainView.classList.add('hidden-view');
                 dom.forgotView.classList.remove('hidden-view');
                 if(dom.emailInput.value) dom.resetEmailInput.value = dom.emailInput.value;
+            } else if (viewName === 'password-setup') {
+                dom.passwordSetupView.classList.remove('hidden-view');
             } else {
-                dom.forgotView.classList.add('hidden-view');
+                // Default to login
                 dom.mainView.classList.remove('hidden-view');
             }
         }
@@ -600,7 +616,7 @@
             if (user) window.location.href = mainAppUrl;
         });
 
-        // Toggle Password Logic (Generic)
+        // Toggle Password Logic
         function setupToggle(icon, input) {
             icon.addEventListener('click', () => {
                 const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -612,7 +628,6 @@
         setupToggle(dom.toggleConfirmPassword, dom.confirmPasswordInput);
         setupToggle(dom.toggleNewPass, dom.newPasswordInput);
         setupToggle(dom.toggleConfirmNewPass, dom.confirmNewPasswordInput);
-
 
         dom.loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -661,7 +676,8 @@
             try {
                 const result = await signInWithPopup(auth, googleProvider);
                 if (!result.user.providerData.some(p => p.providerId === 'password')) {
-                    dom.passwordModal.classList.add('active');
+                    // Switch to the new inline view instead of modal
+                    switchView('password-setup');
                 } else {
                     sessionStorage.removeItem('pendingGoogleAuth');
                     window.location.href = mainAppUrl;
@@ -677,7 +693,7 @@
             isRegisterMode = !isRegisterMode;
             dom.emailInput.value = ''; 
             dom.passwordInput.value = '';
-            dom.confirmPasswordInput.value = ''; // Clear confirm input
+            dom.confirmPasswordInput.value = '';
 
             if (isRegisterMode) {
                 dom.pageTitle.textContent = "Create Account";
@@ -686,7 +702,7 @@
                 dom.toggleText.textContent = "Already have an account?";
                 dom.toggleModeBtn.textContent = "Sign In";
                 dom.forgotLink.style.display = 'none';
-                dom.confirmPasswordContainer.classList.remove('hidden'); // Show confirm input
+                dom.confirmPasswordContainer.classList.remove('hidden');
             } else {
                 dom.pageTitle.textContent = "Sign In";
                 dom.pageSubtitle.textContent = "Welcome back! Please enter your details.";
@@ -694,7 +710,7 @@
                 dom.toggleText.textContent = "Don't have an account?";
                 dom.toggleModeBtn.textContent = "Sign Up";
                 dom.forgotLink.style.display = 'block';
-                dom.confirmPasswordContainer.classList.add('hidden'); // Hide confirm input
+                dom.confirmPasswordContainer.classList.add('hidden');
             }
         });
 
@@ -705,18 +721,22 @@
             if (newPass.length < 6) return showToast('Password must be at least 6 characters');
             if (newPass !== confirmPass) return showToast('Passwords do not match');
 
+            const originalText = dom.savePasswordBtn.textContent;
             dom.savePasswordBtn.textContent = 'Saving...';
+            dom.savePasswordBtn.disabled = true;
+
             try {
                 await updatePassword(auth.currentUser, newPass);
                 sessionStorage.removeItem('pendingGoogleAuth');
                 window.location.href = mainAppUrl;
             } catch (error) {
-                dom.savePasswordBtn.textContent = 'Save Password';
+                dom.savePasswordBtn.textContent = originalText;
+                dom.savePasswordBtn.disabled = false;
                 showToast(error.message);
             }
         });
         
-        document.getElementById('skipPasswordBtn').addEventListener('click', () => {
+        dom.skipPasswordBtn.addEventListener('click', () => {
             sessionStorage.removeItem('pendingGoogleAuth');
             window.location.href = mainAppUrl;
         });
