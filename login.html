@@ -558,7 +558,7 @@
         function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
             const redirectUrl = params.get('redirectUrl');
-            return (redirectUrl && redirectUrl.startsWith('http')) ? redirectUrl : 'https://stack-base.github.io/accounts/dashboard';
+            return (redirectUrl && redirectUrl.startsWith('http')) ? redirectUrl : 'https://stack-base.github.io/account/dashboard';
         }
         const mainAppUrl = getRedirectUrl();
 
