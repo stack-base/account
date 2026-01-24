@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff" id="theme-color-meta">
+    <title>StackBase | Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const metaTheme = document.getElementById('theme-color-meta');
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.documentElement.classList.add('dark');
+                metaTheme.setAttribute('content', '#000000');
+            } else {
+                document.documentElement.classList.remove('dark');
+                metaTheme.setAttribute('content', '#ffffff');
+            }
+        })();
+    </script>
+
+    <style>
+        /* CSS Variables - Matched to Login Page */
+        :root {
+            --bg-page: #ffffff;
+            --bg-panel: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --error: #ef4444;
+            --radius-btn: 12px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        html.dark {
+            --bg-page: #000000;
+            --bg-panel: #000000;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            box-shadow: var(--shadow-card);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-btn);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--error);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--error);
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Hide elements initially */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="loading-view">
+        <div class="loader"></div>
+    </div>
+
+    <div id="dashboard-view" class="container hidden">
+        <div class="card" id="dashboard-card">
+            <div class="user-avatar" id="user-initial">U</div>
+            <h1>Welcome Back</h1>
+            <p id="user-email">...</p>
+            <button id="signOutBtn" class="btn btn-danger">Sign Out</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // CONFIG FROM YOUR LOGIN PAGE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
+            authDomain: "timetrekker-app.firebaseapp.com",
+            projectId: "timetrekker-app",
+            storageBucket: "timetrekker-app.firebasestorage.app",
+            messagingSenderId: "83185163190",
+            appId: "1:83185163190:web:e2974c5d0f0274fe5e3f17",
+            measurementId: "G-FLZ02E1Y5L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const dom = {
+            loadingView: document.getElementById('loading-view'),
+            dashboardView: document.getElementById('dashboard-view'),
+            dashboardCard: document.getElementById('dashboard-card'),
+            emailDisplay: document.getElementById('user-email'),
+            initialDisplay: document.getElementById('user-initial'),
+            signOutBtn: document.getElementById('signOutBtn')
+        };
+
+        // Determine where to redirect on logout
+        const loginPageUrl = 'login.html'; 
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                dom.loadingView.classList.add('hidden');
+                dom.dashboardView.classList.remove('hidden');
+                
+                // Add simple fade-in animation
+                setTimeout(() => dom.dashboardCard.classList.add('visible'), 50);
+
+                // Populate Data
+                dom.emailDisplay.textContent = user.email;
+                if(user.email) {
+                    dom.initialDisplay.textContent = user.email.charAt(0).toUpperCase();
+                }
+
+            } else {
+                // No user is signed in, redirect immediately
+                window.location.replace(loginPageUrl);
+            }
+        });
+
+        dom.signOutBtn.addEventListener('click', async () => {
+            const originalText = dom.signOutBtn.textContent;
+            dom.signOutBtn.textContent = 'Signing out...';
+            try {
+                await signOut(auth);
+                // onAuthStateChanged will handle the redirect
+            } catch (error) {
+                console.error('Error signing out:', error);
+                dom.signOutBtn.textContent = originalText;
+                alert('Failed to sign out');
+            }
+        });
+    </script>
+</body>
+</html>
