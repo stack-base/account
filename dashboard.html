@@ -45,6 +45,10 @@
             --primary-hover: #1d4ed8;
             --success: #10b981;
             
+            /* Scrollbar Colors (Light) */
+            --scrollbar-thumb: #d1d5db;
+            --scrollbar-thumb-hover: #9ca3af;
+            
             /* App Specific Colors */
             --color-timetrekker: #ef4444;
             --color-swiftinvoice: #0d9488; 
@@ -76,12 +80,45 @@
             --border-color: #27272a;
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
+            
+            /* Scrollbar Colors (Dark) */
+            --scrollbar-thumb: #27272a;
+            --scrollbar-thumb-hover: #52525b;
+
             --shadow-sm: none;
             --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
             --shadow-island: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb);
+            border-radius: 99px;
+            border: 3px solid transparent; /* Creates padding effect */
+            background-clip: content-box;
+            transition: background-color 0.2s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbar-thumb-hover);
+        }
+
+        /* Firefox Support */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) transparent;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
