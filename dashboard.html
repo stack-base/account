@@ -31,7 +31,7 @@
             --bg-card: #ffffff;
             --bg-glass: rgba(255, 255, 255, 0.9);
             --bg-hover: #f9fafb;
-            --bg-active: #eff6ff;
+            --bg-active: #eff6ff; /* Light mode active background */
             --text-main: #111827;
             --text-muted: #6b7280;
             --text-light: #9ca3af;
@@ -59,7 +59,7 @@
             --bg-card: #121212;
             --bg-glass: rgba(25, 25, 25, 0.85);
             --bg-hover: #27272a;
-            --bg-active: #1e1b4b;
+            --bg-active: rgba(59, 130, 246, 0.15); /* FIXED: Lighter, transparent blue for dark mode */
             --text-main: #f9fafb;
             --text-muted: #a1a1aa;
             --text-light: #525252;
@@ -551,7 +551,6 @@
         /* --- Help Center Styles --- */
         .help-hero {
             text-align: center;
-            /* Updated padding to prevent content from hiding behind the header */
             padding: 9rem 1rem 3rem; 
             background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
         }
@@ -960,7 +959,8 @@
                             Our team is available Mon-Fri to assist you with any technical issues.
                         </p>
                         <button class="btn-primary contact-btn" id="contact-support-btn">
-                            Contact Support
+                            <i class="ph-bold ph-paper-plane-right"></i>
+                            <span>Contact Support</span>
                         </button>
                         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-light); text-align: center;">
                             Average response time: <span style="color: var(--success); font-weight: 600;">2 hours</span>
@@ -1105,12 +1105,12 @@
 
         if(dom.contactBtn) {
             dom.contactBtn.addEventListener('click', () => {
-                const originalText = dom.contactBtn.innerHTML;
+                const originalContent = dom.contactBtn.innerHTML;
                 dom.contactBtn.innerHTML = '<div class="skeleton" style="width:20px;height:20px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:5px;"></div> Sending...';
                 dom.contactBtn.disabled = true;
                 setTimeout(() => {
                     showToast('Support request sent! Check your email.');
-                    dom.contactBtn.innerHTML = originalText;
+                    dom.contactBtn.innerHTML = originalContent;
                     dom.contactBtn.disabled = false;
                 }, 1500);
             });
