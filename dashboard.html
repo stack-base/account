@@ -260,7 +260,6 @@
         .hero-section {
             margin-bottom: 2.5rem;
             animation: slideDown 0.5s ease-out;
-            /* Updated for breathing room & aesthetics */
             padding: 4.5rem 2rem;
             background: 
                 radial-gradient(70% 70% at 90% 10%, rgba(37, 99, 235, 0.08) 0%, transparent 100%),
@@ -288,9 +287,17 @@
         }
         .quote-box i { color: var(--primary); }
 
-        /* Apps Grid */
+        /* --- EDIT MODE & APPS GRID --- */
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        
+        .btn-edit {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            background: none; border: none; cursor: pointer;
+            padding: 0.25rem 0.75rem; border-radius: 6px;
+            transition: var(--transition);
+        }
+        .btn-edit:hover { background-color: var(--bg-active); }
         
         .apps-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -303,12 +310,51 @@
             display: flex; flex-direction: column; transition: var(--transition);
             text-decoration: none; color: var(--text-main); position: relative;
             box-shadow: var(--shadow-sm); overflow: hidden;
+            /* Needed for shaking */
+            transform-origin: center;
         }
+        
+        /* Remove Button */
+        .remove-badge {
+            position: absolute; top: 12px; right: 12px;
+            width: 28px; height: 28px; background-color: #ef4444;
+            color: white; border-radius: 50%; border: 2px solid var(--bg-card);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 20; opacity: 0; transform: scale(0.5);
+            pointer-events: none; transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Edit Mode Active State */
+        .apps-grid.edit-mode .remove-badge {
+            opacity: 1; transform: scale(1); pointer-events: auto;
+        }
+        
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-1deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .apps-grid.edit-mode .app-card.app-item {
+            animation: shake 0.3s infinite ease-in-out;
+            border-color: var(--primary);
+            cursor: default; /* Change cursor to indicate not clickable */
+        }
+        
+        .app-card.hidden { display: none !important; }
+
         .app-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
             background-color: transparent; transition: var(--transition);
         }
         .app-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); border-color: rgba(37, 99, 235, 0.3); }
+        
+        /* Disable hover transform in edit mode */
+        .apps-grid.edit-mode .app-card:hover { transform: none; box-shadow: var(--shadow-sm); }
+
         .app-card.timetrekker:hover::before { background-color: var(--color-timetrekker); }
         .app-card.swiftinvoice:hover::before { background-color: var(--color-swiftinvoice); }
         .app-card.datastudio:hover::before { background-color: var(--color-datastudio); }
@@ -480,11 +526,14 @@
 
                 <div class="section-header">
                     <h2 class="section-title">My Apps</h2>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">3 Active</span>
+                    <button id="edit-apps-btn" class="btn-edit">Edit</button>
                 </div>
 
                 <div class="apps-grid fade-in" id="apps-grid" style="animation-delay: 0.2s;">
-                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item timetrekker" data-name="timetrekker productivity time">
+                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item timetrekker" data-name="timetrekker productivity time" data-id="timetrekker">
+                        <div class="remove-badge">
+                            <i class="ph-bold ph-x"></i>
+                        </div>
                         <div class="app-header">
                             <div class="app-icon">
                                 <i class="ph-fill ph-mountains"></i>
@@ -501,7 +550,10 @@
                         </div>
                     </a>
 
-                    <a href="https://stack-base.github.io/swiftinvoice/application" class="app-card app-item swiftinvoice" data-name="swiftinvoice invoice pdf finance">
+                    <a href="https://stack-base.github.io/swiftinvoice/application" class="app-card app-item swiftinvoice" data-name="swiftinvoice invoice pdf finance" data-id="swiftinvoice">
+                        <div class="remove-badge">
+                            <i class="ph-bold ph-x"></i>
+                        </div>
                         <div class="app-header">
                             <div class="app-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32" height="32">
@@ -520,7 +572,10 @@
                         </div>
                     </a>
 
-                    <a href="https://stack-base.github.io/swiftinvoice/studio" class="app-card app-item datastudio" data-name="datastudio analytics finance chart">
+                    <a href="https://stack-base.github.io/swiftinvoice/studio" class="app-card app-item datastudio" data-name="datastudio analytics finance chart" data-id="datastudio">
+                        <div class="remove-badge">
+                            <i class="ph-bold ph-x"></i>
+                        </div>
                         <div class="app-header">
                             <div class="app-icon">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
@@ -547,8 +602,9 @@
                         </div>
                         <div class="app-name">Add Module</div>
                         <p class="app-desc">Visit the StackBase marketplace to discover new tools for your workflow.</p>
-                        <div class="app-footer" style="justify-content: flex-start;">
+                        <div class="app-footer" style="justify-content: space-between;">
                             <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Coming Soon</span>
+                            <button id="reset-apps-view" style="border:none; background:none; font-size: 0.75rem; color: var(--text-light); cursor: pointer; text-decoration: underline;">Reset View</button>
                         </div>
                     </div>
                 </div>
@@ -595,7 +651,10 @@
             dailyQuote: document.getElementById('daily-quote'),
             searchInput: document.getElementById('app-search'),
             notifBtn: document.getElementById('notif-btn'),
-            notifPanel: document.getElementById('notif-panel')
+            notifPanel: document.getElementById('notif-panel'),
+            editBtn: document.getElementById('edit-apps-btn'),
+            appsGrid: document.getElementById('apps-grid'),
+            resetViewBtn: document.getElementById('reset-apps-view')
         };
 
         // Quotes Logic
@@ -651,7 +710,78 @@
             }
         }
 
-        // UI Interactions
+        // --- APP EDIT/REMOVE LOGIC ---
+        // 1. Load hidden state
+        let hiddenApps = JSON.parse(localStorage.getItem('stackbase_hidden_apps') || '[]');
+        function applyHiddenState() {
+            document.querySelectorAll('.app-item').forEach(card => {
+                if(hiddenApps.includes(card.dataset.id)) {
+                    card.classList.add('hidden');
+                } else {
+                    card.classList.remove('hidden');
+                }
+            });
+        }
+        applyHiddenState();
+
+        // 2. Toggle Edit Mode
+        let isEditMode = false;
+        dom.editBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            dom.appsGrid.classList.toggle('edit-mode', isEditMode);
+            dom.editBtn.textContent = isEditMode ? 'Done' : 'Edit';
+            
+            // In Edit mode, prevent links from working
+            document.querySelectorAll('.app-item').forEach(card => {
+                if(isEditMode) {
+                    card.addEventListener('click', preventNav);
+                } else {
+                    card.removeEventListener('click', preventNav);
+                }
+            });
+        });
+        
+        function preventNav(e) {
+            // Only prevent if it's NOT the remove button being clicked (which is handled separately)
+            if(!e.target.closest('.remove-badge')) {
+                e.preventDefault(); 
+            }
+        }
+
+        // 3. Handle Remove Click
+        document.querySelectorAll('.remove-badge').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault(); // Stop link nav
+                e.stopPropagation(); // Stop bubbling
+                
+                const card = btn.closest('.app-item');
+                const id = card.dataset.id;
+                
+                // Animate removal
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    card.classList.add('hidden');
+                    // Reset inline styles for when it comes back
+                    card.style.opacity = '';
+                    card.style.transform = '';
+                    
+                    hiddenApps.push(id);
+                    localStorage.setItem('stackbase_hidden_apps', JSON.stringify(hiddenApps));
+                }, 200);
+            });
+        });
+
+        // 4. Reset View (Recovery)
+        dom.resetViewBtn.addEventListener('click', () => {
+            if(confirm('Restore all hidden apps?')) {
+                hiddenApps = [];
+                localStorage.setItem('stackbase_hidden_apps', JSON.stringify(hiddenApps));
+                applyHiddenState();
+            }
+        });
+
+        // --- UI Interactions ---
         function toggleSidebar() {
             const isOpen = dom.sidebar.classList.contains('open');
             dom.sidebar.classList.toggle('open', !isOpen);
@@ -664,7 +794,6 @@
         dom.sidebarCloseBtn.addEventListener('click', toggleSidebar); 
         dom.sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // Notifications
         dom.notifBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             dom.notifPanel.classList.toggle('open');
@@ -677,18 +806,20 @@
             }
         });
 
-        // Search Filter
         dom.searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const apps = document.querySelectorAll('.app-item');
             apps.forEach(app => {
                 const name = app.getAttribute('data-name');
-                if(name.includes(term)) app.style.display = 'flex';
-                else app.style.display = 'none';
+                // Ensure we respect hidden state + search filter
+                const isDeleted = app.classList.contains('hidden') && !app.style.display; 
+                if(!isDeleted) {
+                    if(name.includes(term)) app.style.display = 'flex';
+                    else app.style.display = 'none';
+                }
             });
         });
 
-        // Responsive Media Query for Menu Button
         const mediaQuery = window.matchMedia('(min-width: 1024px)');
         function handleTabletChange(e) {
             if (e.matches) {
@@ -702,14 +833,12 @@
         mediaQuery.addListener(handleTabletChange);
         handleTabletChange(mediaQuery);
 
-        // Logout
         dom.logoutBtn.addEventListener('click', async () => {
             if(confirm('Are you sure you want to sign out?')) {
                 try { await signOut(auth); } catch (e) { alert('Sign out failed'); }
             }
         });
 
-        // Theme
         dom.themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
