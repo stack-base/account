@@ -542,16 +542,7 @@
         .identity-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
         .identity-email { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; word-break: break-all; }
 
-        /* Stats Row */
-        .profile-stats {
-            display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);
-        }
-        .stat-item { display: flex; flex-direction: column; align-items: center; }
-        .stat-value { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
-        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
-
-        .provider-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .provider-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
         .badge {
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.35rem 0.75rem; border-radius: 99px;
@@ -634,6 +625,16 @@
         .divider-text::before, .divider-text::after { content: ''; flex: 1; height: 1px; background-color: var(--border-color); }
         .divider-text::before { margin-right: 1rem; }
         .divider-text::after { margin-left: 1rem; }
+        
+        /* New Button Style for Google Link */
+        .btn-google-link {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        .btn-google-link:hover {
+            background-color: var(--bg-hover);
+        }
 
     </style>
 </head>
@@ -864,17 +865,6 @@
                             <h2 class="identity-name" id="display-name-big">...</h2>
                             <p class="identity-email" id="display-email-big">...</p>
                             
-                            <div class="profile-stats">
-                                <div class="stat-item">
-                                    <span class="stat-value" id="stat-apps">0</span>
-                                    <span class="stat-label">Apps</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value" id="stat-joined">-</span>
-                                    <span class="stat-label">Joined</span>
-                                </div>
-                            </div>
-
                             <div id="provider-badges" class="provider-badges">
                                 </div>
                         </div>
@@ -911,6 +901,21 @@
                                 Save Details
                             </button>
                         </form>
+                        
+                        <div id="google-link-section" class="hidden">
+                            <div class="divider-text">Account Linking</div>
+                            <div class="settings-header" style="border:none; margin-bottom: 0.5rem; padding-bottom: 0;">
+                                <i class="ph-bold ph-link settings-icon" style="color: #DB4437;"></i>
+                                <span class="settings-title">Link Google Account</span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Link your Google account for faster login. You will need to sign in again to verify the new account.
+                            </p>
+                            <button type="button" id="link-google-btn" class="btn-primary btn-google-link">
+                                <i class="ph-bold ph-google-logo" style="color: #DB4437;"></i>
+                                Continue with Google
+                            </button>
+                        </div>
                         
                         <div class="divider-text">Security</div>
 
@@ -1003,8 +1008,10 @@
             providerBadges: document.getElementById('provider-badges'),
             displayNameBig: document.getElementById('display-name-big'),
             displayEmailBig: document.getElementById('display-email-big'),
-            statApps: document.getElementById('stat-apps'),
-            statJoined: document.getElementById('stat-joined'),
+            
+            // Account Linking
+            googleLinkSection: document.getElementById('google-link-section'),
+            linkGoogleBtn: document.getElementById('link-google-btn'),
 
             // Password Form
             passwordForm: document.getElementById('password-form'),
@@ -1072,15 +1079,6 @@
             dom.displayNameBig.textContent = name;
             dom.displayEmailBig.textContent = email;
             
-            // Stats
-            const appCount = document.querySelectorAll('.app-item:not(.hidden)').length;
-            dom.statApps.textContent = appCount;
-            
-            if(user.metadata.creationTime) {
-                const date = new Date(user.metadata.creationTime);
-                dom.statJoined.textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-            }
-
             // Avatar
             dom.profileAvatarDisplay.innerHTML = '';
             if (user.photoURL) {
@@ -1107,6 +1105,13 @@
                     <div class="badge email">
                         <i class="ph-bold ph-envelope-simple"></i> Email
                     </div>`;
+            }
+
+            // Toggle Google Link Button based on providers
+            if (!providers.includes('google.com')) {
+                dom.googleLinkSection.classList.remove('hidden');
+            } else {
+                dom.googleLinkSection.classList.add('hidden');
             }
         }
 
@@ -1137,6 +1142,19 @@
                 dom.saveProfileBtn.disabled = false;
                 dom.saveProfileBtn.textContent = originalBtnText;
             }
+        });
+
+        // Handle Google Account Linking
+        dom.linkGoogleBtn.addEventListener('click', async () => {
+             try {
+                // Sign out the current user
+                await signOut(auth);
+                // Redirect to login page for merging
+                window.location.href = 'https://stack-base.github.io/account/login';
+             } catch (error) {
+                console.error('Error during sign out for linking:', error);
+                showToast('Error redirecting. Please try again.', 'error');
+             }
         });
 
         // Handle Password Update
