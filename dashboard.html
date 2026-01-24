@@ -550,23 +550,10 @@
         }
 
         /* --- Help Center Styles --- */
-        /* --- Help Center Styles --- */
         .help-hero {
             text-align: center;
-            padding: 9rem 1rem 4rem;
-            /* UPDATED: Dual radial gradient (Blue top-left, Purple bottom-right) */
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
-            position: relative;
-        }
-
-        /* NEW: Dark mode specific gradient */
-        html.dark .help-hero {
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%);
-            border-bottom: 1px solid var(--border-color);
+            padding: 9rem 1rem 3rem; 
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
         }
         .help-title { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
         .help-subtitle { color: var(--text-muted); max-width: 500px; margin: 0 auto 2rem; font-size: 1rem; }
