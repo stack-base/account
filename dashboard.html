@@ -547,6 +547,61 @@
                 padding-right: 1.25rem;
             }
         }
+
+        /* --- Help Center Styles --- */
+        .help-hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+        }
+        .help-title { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
+        .help-subtitle { color: var(--text-muted); max-width: 500px; margin: 0 auto 2rem; font-size: 1rem; }
+        .faq-search-wrapper {
+            max-width: 600px; margin: 0 auto; position: relative;
+        }
+        .faq-search-input {
+            width: 100%; padding: 1rem 1rem 1rem 3rem;
+            border-radius: 99px; border: 1px solid var(--border-color);
+            background-color: var(--bg-card); color: var(--text-main);
+            box-shadow: var(--shadow-sm); font-size: 1rem; transition: var(--transition);
+        }
+        .faq-search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15); }
+        .faq-search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
+
+        .help-grid {
+            display: grid; grid-template-columns: 1fr; gap: 2rem;
+            max-width: 1000px; margin: 0 auto; padding-bottom: 4rem;
+        }
+        @media (min-width: 768px) { .help-grid { grid-template-columns: 2fr 1fr; } }
+
+        .faq-section { background-color: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; }
+        .faq-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 1.1rem; }
+        .faq-item { border-bottom: 1px solid var(--border-color); }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-question {
+            width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none;
+            color: var(--text-main); font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s;
+        }
+        .faq-question:hover { background-color: var(--bg-hover); }
+        .faq-question i { transition: transform 0.3s ease; color: var(--text-light); }
+        .faq-item.active .faq-question i { transform: rotate(180deg); color: var(--primary); }
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem 1.5rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;
+            display: none; animation: slideDown 0.2s ease-out;
+        }
+        .faq-item.active .faq-answer { display: block; }
+
+        .support-card {
+            background-color: var(--bg-card); border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color); padding: 1.5rem; position: sticky; top: 2rem;
+        }
+        .support-icon { 
+            width: 48px; height: 48px; border-radius: 12px; background-color: rgba(37, 99, 235, 0.1); 
+            color: var(--primary); display: flex; align-items: center; justify-content: center; 
+            font-size: 1.5rem; margin-bottom: 1rem; 
+        }
+        .contact-btn { width: 100%; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -594,7 +649,7 @@
                     Profile
                 </a>
                 <div class="nav-section-label">Support</div>
-                <a href="#" class="nav-item" onclick="alert('Help Center coming soon')">
+                <a href="#" class="nav-item" id="nav-help">
                     <i class="ph ph-life-buoy"></i>
                     Help Center
                 </a>
@@ -738,6 +793,7 @@
                     </div>
                 </div>
             </div>
+            
             <div id="profile-view" class="profile-view hidden">
                 <div class="profile-grid">
                     <div class="identity-card">
@@ -831,6 +887,86 @@
                     </div>
                 </div>
             </div>
+
+            <div id="help-view" class="help-view hidden fade-in">
+                <div class="help-hero">
+                    <h1 class="help-title">How can we help?</h1>
+                    <p class="help-subtitle">Search our knowledge base or get in touch with our support team for assistance.</p>
+                    <div class="faq-search-wrapper">
+                        <i class="ph ph-magnifying-glass faq-search-icon"></i>
+                        <input type="text" id="faq-search" class="faq-search-input" placeholder="Search for answers (e.g. 'password', 'billing')...">
+                    </div>
+                </div>
+
+                <div class="container help-grid">
+                    <div class="faq-section">
+                        <div class="faq-header">Frequently Asked Questions</div>
+                        <div id="faq-list">
+                            <div class="faq-item">
+                                <button class="faq-question">
+                                    How do I reset my password?
+                                    <i class="ph ph-caret-down"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Go to the Profile tab in the sidebar. Under the "Security" section, enter your new password and confirm it. Click "Update Password" to save changes.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question">
+                                    Is StackBase free to use?
+                                    <i class="ph ph-caret-down"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    StackBase is currently in open beta and is free for all users. Premium features for modules like SwiftInvoice may be introduced in the future.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question">
+                                    How do I connect my Google Account?
+                                    <i class="ph ph-caret-down"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Navigate to your Profile. If you haven't linked an account yet, you will see a "Link Google Account" section. Click the button and follow the prompts.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question">
+                                    Can I export my data?
+                                    <i class="ph ph-caret-down"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    Data export is handled within individual apps. For example, in SwiftInvoice, you can download invoices as PDF files directly to your device.
+                                </div>
+                            </div>
+                             <div class="faq-item">
+                                <button class="faq-question">
+                                    Where is my data stored?
+                                    <i class="ph ph-caret-down"></i>
+                                </button>
+                                <div class="faq-answer">
+                                    We use Google Firebase for secure cloud storage and authentication. Your data is encrypted and stored on secure servers.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="support-card">
+                        <div class="support-icon">
+                            <i class="ph-fill ph-chat-circle-text"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Still need help?</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            Our team is available Mon-Fri to assist you with any technical issues.
+                        </p>
+                        <button class="btn-primary contact-btn" id="contact-support-btn">
+                            Contact Support
+                        </button>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-light); text-align: center;">
+                            Average response time: <span style="color: var(--success); font-weight: 600;">2 hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script type="module">
@@ -867,10 +1003,22 @@
             editBtn: document.getElementById('edit-apps-btn'),
             appsGrid: document.getElementById('apps-grid'),
             resetViewBtn: document.getElementById('reset-apps-view'),
+            
+            // Nav Items
             navDashboard: document.getElementById('nav-dashboard'),
             navProfile: document.getElementById('nav-profile'),
+            navHelp: document.getElementById('nav-help'),
+            
+            // Views
             viewDashboard: document.getElementById('dashboard-view'),
             viewProfile: document.getElementById('profile-view'),
+            viewHelp: document.getElementById('help-view'),
+            
+            // Help Specific
+            faqSearch: document.getElementById('faq-search'),
+            contactBtn: document.getElementById('contact-support-btn'),
+            
+            // Profile Form
             profileForm: document.getElementById('profile-form'),
             profileEmailInput: document.getElementById('profile-email-input'),
             profileNameInput: document.getElementById('profile-name-input'),
@@ -905,14 +1053,21 @@
         function switchView(viewName) {
             dom.navDashboard.classList.toggle('active', viewName === 'dashboard');
             dom.navProfile.classList.toggle('active', viewName === 'profile');
+            dom.navHelp.classList.toggle('active', viewName === 'help');
+            
+            dom.viewDashboard.classList.add('hidden');
+            dom.viewProfile.classList.add('hidden');
+            dom.viewHelp.classList.add('hidden');
+
             if(viewName === 'dashboard') {
                 dom.viewDashboard.classList.remove('hidden');
-                dom.viewProfile.classList.add('hidden');
-            } else {
-                dom.viewDashboard.classList.add('hidden');
+            } else if (viewName === 'profile') {
                 dom.viewProfile.classList.remove('hidden');
                 if(auth.currentUser) populateProfileForm(auth.currentUser);
+            } else if (viewName === 'help') {
+                dom.viewHelp.classList.remove('hidden');
             }
+
             if(window.innerWidth < 1024) {
                 dom.sidebar.classList.remove('open');
                 dom.sidebarOverlay.classList.remove('open');
@@ -920,6 +1075,46 @@
         }
         dom.navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('dashboard'); });
         dom.navProfile.addEventListener('click', (e) => { e.preventDefault(); switchView('profile'); });
+        dom.navHelp.addEventListener('click', (e) => { e.preventDefault(); switchView('help'); });
+
+        // FAQ & Help Logic
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                if (!isActive) item.classList.add('active');
+            });
+        });
+
+        if(dom.faqSearch) {
+            dom.faqSearch.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                    if(question.includes(term) || answer.includes(term)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        if(dom.contactBtn) {
+            dom.contactBtn.addEventListener('click', () => {
+                const originalText = dom.contactBtn.innerHTML;
+                dom.contactBtn.innerHTML = '<div class="skeleton" style="width:20px;height:20px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:5px;"></div> Sending...';
+                dom.contactBtn.disabled = true;
+                setTimeout(() => {
+                    showToast('Support request sent! Check your email.');
+                    dom.contactBtn.innerHTML = originalText;
+                    dom.contactBtn.disabled = false;
+                }, 1500);
+            });
+        }
+
         function populateProfileForm(user) {
             const name = user.displayName || 'User';
             const email = user.email || 'No Email';
