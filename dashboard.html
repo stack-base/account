@@ -50,7 +50,7 @@
             --color-swiftinvoice: #0d9488; 
             --color-datastudio: #7c3aed;   
 
-            --radius-xl: 20px;
+            --radius-xl: 24px;
             --radius-lg: 16px;
             --radius-md: 12px;
             --radius-pill: 999px;
@@ -462,7 +462,22 @@
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PROFILE VIEW (IMPROVED) --- */
+        /* --- TOAST NOTIFICATION --- */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--text-main); color: var(--bg-page);
+            padding: 0.75rem 1.5rem; border-radius: 99px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            font-size: 0.9rem; font-weight: 600;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 200; display: flex; align-items: center; gap: 0.5rem;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--text-main); color: var(--bg-page); }
+        .toast.error { background: #ef4444; color: white; }
+
+        /* --- PROFILE VIEW (POLISHED) --- */
         .profile-view {
             max-width: 1000px;
             margin: 2rem auto;
@@ -476,7 +491,7 @@
             gap: 2rem;
         }
         @media (min-width: 768px) {
-            .profile-grid { grid-template-columns: 320px 1fr; }
+            .profile-grid { grid-template-columns: 340px 1fr; }
         }
 
         /* Identity Card (Left Side) */
@@ -491,30 +506,46 @@
         }
 
         .identity-cover {
-            height: 120px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            height: 140px;
+            /* Modern Mesh Gradient */
+            background: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
             position: relative;
         }
         
         .identity-avatar-wrapper {
-            width: 110px;
-            height: 110px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background-color: var(--bg-card);
-            border: 4px solid var(--bg-card);
-            margin: -55px auto 1rem;
+            border: 5px solid var(--bg-card);
+            margin: -60px auto 1rem;
             position: relative;
             z-index: 2;
             overflow: hidden;
-            box-shadow: var(--shadow-island);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem; color: var(--text-light);
+            transition: transform 0.3s ease;
         }
+        .identity-avatar-wrapper:hover { transform: scale(1.05); }
         .identity-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-        .identity-content { padding: 0 1.5rem 2rem; }
-        .identity-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .identity-content { padding: 0 2rem 2.5rem; }
+        .identity-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
         .identity-email { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; word-break: break-all; }
+
+        /* Stats Row */
+        .profile-stats {
+            display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);
+        }
+        .stat-item { display: flex; flex-direction: column; align-items: center; }
+        .stat-value { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
 
         .provider-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
         .badge {
@@ -524,7 +555,7 @@
             background-color: var(--bg-hover); border: 1px solid var(--border-color);
             color: var(--text-muted);
         }
-        .badge.google { color: #DB4437; background-color: rgba(219, 68, 55, 0.08); border-color: rgba(219, 68, 55, 0.2); }
+        .badge.google { color: #DB4437; background-color: rgba(219, 68, 55, 0.08); border-color: rgba(219, 68, 55, 0.15); }
         .badge.email { color: var(--text-main); }
 
         /* Settings Card (Right Side) */
@@ -532,13 +563,13 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-xl);
-            padding: 2rem;
+            padding: 2.5rem;
             box-shadow: var(--shadow-sm);
         }
 
         .settings-header { 
             display: flex; align-items: center; gap: 0.75rem; 
-            margin-bottom: 1.5rem; padding-bottom: 1rem; 
+            margin-bottom: 2rem; padding-bottom: 1rem; 
             border-bottom: 1px solid var(--border-color); 
         }
         .settings-title { font-size: 1.1rem; font-weight: 700; }
@@ -551,12 +582,13 @@
         .input-group { position: relative; }
         .input-group i {
             position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-            color: var(--text-light); font-size: 1.1rem; pointer-events: none;
+            color: var(--text-light); font-size: 1.2rem; pointer-events: none;
+            transition: color 0.2s ease;
         }
         
         .form-input { 
             width: 100%; 
-            padding: 0.75rem 1rem 0.75rem 2.8rem; /* Padding left for icon */
+            padding: 0.85rem 1rem 0.85rem 2.8rem; /* Padding left for icon */
             border-radius: var(--radius-md); 
             border: 1px solid var(--border-color); 
             background-color: var(--bg-page); 
@@ -565,17 +597,18 @@
             transition: var(--transition); 
         }
 
-        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); background-color: var(--bg-card); }
+        .form-input:focus + i { color: var(--primary); } /* This won't work with current HTML structure, but keeping clean */
         .form-input:disabled { opacity: 0.7; cursor: not-allowed; background-color: var(--bg-hover); color: var(--text-muted); }
 
         .btn-primary {
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.5rem;
             border-radius: var(--radius-md);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
@@ -583,14 +616,16 @@
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
+            box-shadow: 0 2px 5px rgba(37, 99, 235, 0.2);
         }
-        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.7; cursor: wait; }
+        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.7; cursor: wait; transform: none; }
 
         .divider-text { 
             display: flex; align-items: center; color: var(--text-light); 
-            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; 
-            margin: 2rem 0; text-transform: uppercase; 
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; 
+            margin: 2.5rem 0 1.5rem; text-transform: uppercase; 
         }
         .divider-text::before, .divider-text::after { content: ''; flex: 1; height: 1px; background-color: var(--border-color); }
         .divider-text::before { margin-right: 1rem; }
@@ -601,6 +636,11 @@
 <body>
 
     <div class="overlay" id="sidebar-overlay"></div>
+
+    <div id="toast" class="toast">
+        <i class="ph-fill ph-check-circle"></i>
+        <span id="toast-message">Operation successful</span>
+    </div>
 
     <div class="notification-panel" id="notif-panel">
         <div class="notif-header">Notifications</div>
@@ -820,6 +860,17 @@
                             <h2 class="identity-name" id="display-name-big">...</h2>
                             <p class="identity-email" id="display-email-big">...</p>
                             
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stat-apps">0</span>
+                                    <span class="stat-label">Apps</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stat-joined">-</span>
+                                    <span class="stat-label">Joined</span>
+                                </div>
+                            </div>
+
                             <div id="provider-badges" class="provider-badges">
                                 </div>
                         </div>
@@ -948,13 +999,37 @@
             providerBadges: document.getElementById('provider-badges'),
             displayNameBig: document.getElementById('display-name-big'),
             displayEmailBig: document.getElementById('display-email-big'),
+            statApps: document.getElementById('stat-apps'),
+            statJoined: document.getElementById('stat-joined'),
 
             // Password Form
             passwordForm: document.getElementById('password-form'),
             newPassword: document.getElementById('new-password'),
             confirmPassword: document.getElementById('confirm-password'),
-            savePasswordBtn: document.getElementById('save-password-btn')
+            savePasswordBtn: document.getElementById('save-password-btn'),
+
+            // Toast
+            toast: document.getElementById('toast'),
+            toastMessage: document.getElementById('toast-message')
         };
+
+        // --- TOAST NOTIFICATION LOGIC ---
+        function showToast(message, type = 'success') {
+            dom.toastMessage.textContent = message;
+            dom.toast.className = `toast ${type}`;
+            
+            const icon = dom.toast.querySelector('i');
+            if(type === 'error') {
+                icon.className = 'ph-fill ph-warning-circle';
+            } else {
+                icon.className = 'ph-fill ph-check-circle';
+            }
+
+            dom.toast.classList.add('show');
+            setTimeout(() => {
+                dom.toast.classList.remove('show');
+            }, 3000);
+        }
 
         // --- VIEW SWITCHING LOGIC ---
         function switchView(viewName) {
@@ -993,6 +1068,15 @@
             dom.displayNameBig.textContent = name;
             dom.displayEmailBig.textContent = email;
             
+            // Stats
+            const appCount = document.querySelectorAll('.app-item:not(.hidden)').length;
+            dom.statApps.textContent = appCount;
+            
+            if(user.metadata.creationTime) {
+                const date = new Date(user.metadata.creationTime);
+                dom.statJoined.textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            }
+
             // Avatar
             dom.profileAvatarDisplay.innerHTML = '';
             if (user.photoURL) {
@@ -1040,11 +1124,11 @@
                 renderProfile(user); // Update sidebar
                 populateProfileForm(user); // Update profile card
                 updateGreeting(newName);
-                alert('Profile details updated successfully.');
+                showToast('Profile updated successfully');
                 
             } catch (error) {
                 console.error(error);
-                alert('Error updating profile: ' + error.message);
+                showToast(error.message, 'error');
             } finally {
                 dom.saveProfileBtn.disabled = false;
                 dom.saveProfileBtn.textContent = originalBtnText;
@@ -1059,11 +1143,11 @@
             const confirmPass = dom.confirmPassword.value;
 
             if (newPass !== confirmPass) {
-                alert("Passwords do not match.");
+                showToast("Passwords do not match", 'error');
                 return;
             }
             if (newPass.length < 6) {
-                alert("Password must be at least 6 characters.");
+                showToast("Password must be 6+ characters", 'error');
                 return;
             }
 
@@ -1074,16 +1158,16 @@
 
                 await updatePassword(user, newPass);
                 
-                alert("Password updated successfully.");
+                showToast("Password updated successfully");
                 dom.newPassword.value = '';
                 dom.confirmPassword.value = '';
 
             } catch (error) {
                 console.error(error);
                 if (error.code === 'auth/requires-recent-login') {
-                    alert("For security, please sign out and sign in again before changing your password.");
+                    showToast("Please sign out and back in to change password", 'error');
                 } else {
-                    alert('Error: ' + error.message);
+                    showToast(error.message, 'error');
                 }
             } finally {
                 dom.savePasswordBtn.disabled = false;
