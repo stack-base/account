@@ -8,7 +8,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -31,38 +31,43 @@
     <style>
         :root {
             /* Light Mode */
-            --bg-page: #f9fafb;
+            --bg-page: #f3f4f6;
             --bg-sidebar: #ffffff;
             --bg-card: #ffffff;
-            --bg-hover: #f3f4f6;
+            --bg-glass: rgba(255, 255, 255, 0.8);
+            --bg-hover: #f9fafb;
             --bg-active: #eff6ff;
             --text-main: #111827;
             --text-muted: #6b7280;
+            --text-light: #9ca3af;
             --border-color: #e5e7eb;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --radius-xl: 20px;
             --radius-lg: 16px;
             --radius-md: 12px;
-            --radius-sm: 8px;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         html.dark {
-            /* Dark Mode - Matches TimeTrekker aesthetic */
-            --bg-page: #09090b;
-            --bg-sidebar: #000000;
+            /* Dark Mode */
+            --bg-page: #000000;
+            --bg-sidebar: #09090b;
             --bg-card: #121212;
+            --bg-glass: rgba(18, 18, 18, 0.8);
             --bg-hover: #27272a;
             --bg-active: #1e1b4b;
             --text-main: #f9fafb;
             --text-muted: #a1a1aa;
+            --text-light: #525252;
             --border-color: #27272a;
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
             --shadow-sm: none;
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -79,7 +84,7 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 260px;
             background-color: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
             display: flex;
@@ -89,42 +94,43 @@
             inset: 0 auto 0 0;
             z-index: 50;
             transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (min-width: 1024px) {
             .sidebar { position: static; transform: translateX(0); }
         }
 
-        .sidebar.open { transform: translateX(0); }
+        .sidebar.open { transform: translateX(0); box-shadow: 10px 0 25px rgba(0,0,0,0.1); }
 
         .brand-section {
-            padding: 1.5rem;
+            padding: 1.75rem 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
         }
         .brand-logo { width: 32px; height: 32px; }
-        .brand-name { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em; }
+        .brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
 
-        .nav-links { padding: 1.5rem 1rem; flex: 1; }
+        .nav-links { padding: 1rem; flex: 1; }
+        .nav-section-label {
+            font-size: 0.75rem; font-weight: 700; color: var(--text-light);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            padding: 0 0.75rem; margin-bottom: 0.5rem; margin-top: 1.5rem;
+        }
+        .nav-section-label:first-child { margin-top: 0; }
+
         .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: var(--transition);
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 0.75rem; color: var(--text-muted);
+            text-decoration: none; border-radius: var(--radius-md);
+            font-weight: 500; font-size: 0.9rem; transition: var(--transition);
             margin-bottom: 0.25rem;
         }
         .nav-item:hover { background-color: var(--bg-hover); color: var(--text-main); }
         .nav-item.active { background-color: var(--bg-active); color: var(--primary); }
-        .nav-item i { font-size: 1.25rem; }
+        .nav-item i { font-size: 1.25rem; opacity: 0.8; }
+        .nav-item.active i { opacity: 1; }
 
         .user-profile {
             padding: 1rem;
@@ -132,137 +138,172 @@
             background-color: var(--bg-sidebar);
         }
         .user-card {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            transition: var(--transition);
-            cursor: default;
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem; border-radius: var(--radius-md);
+            transition: var(--transition); cursor: default;
+            background-color: var(--bg-hover);
+            border: 1px solid var(--border-color);
         }
         .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background-color: var(--bg-hover); overflow: hidden;
+            width: 36px; height: 36px; border-radius: 50%;
+            background-color: var(--bg-card); overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            color: var(--text-muted); font-weight: 600; flex-shrink: 0;
+            color: var(--text-main); font-weight: 600; flex-shrink: 0;
             border: 1px solid var(--border-color);
         }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-info { overflow: hidden; flex: 1; }
-        .user-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-email { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         /* Main Content */
         .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
+            flex: 1; display: flex; flex-direction: column;
+            overflow: hidden; position: relative; width: 100%;
         }
 
         .header {
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-            background-color: var(--bg-page);
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
+            height: 70px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2rem; background-color: var(--bg-glass);
+            border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 30;
         }
+        @media (max-width: 768px) { .header { padding: 0 1rem; } }
+
+        .search-container {
+            position: relative; max-width: 400px; width: 100%;
+            display: none;
+        }
+        @media (min-width: 768px) { .search-container { display: block; } }
+
+        .search-input {
+            width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 99px; border: 1px solid var(--border-color);
+            background-color: var(--bg-card); color: var(--text-main);
+            font-size: 0.9rem; transition: var(--transition);
+        }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
         
-        .menu-btn {
-            display: block;
-            border: none;
-            background: none;
-            color: var(--text-main);
-            cursor: pointer;
-            padding: 0.5rem;
-            margin-left: -0.5rem;
+        .btn-icon {
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; padding: 0.6rem; border-radius: 50%;
+            transition: var(--transition); display: flex; position: relative;
         }
-        @media (min-width: 1024px) { .menu-btn { display: none; } }
-
-        .content-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem 1.5rem;
+        .btn-icon:hover { color: var(--text-main); background-color: var(--bg-hover); }
+        .btn-icon.active { color: var(--primary); background-color: var(--bg-active); }
+        .notification-dot {
+            position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+            background-color: #ef4444; border-radius: 50%; border: 2px solid var(--bg-card);
         }
 
-        .container { max-width: 1100px; margin: 0 auto; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 2rem; }
+        @media (max-width: 768px) { .content-scroll { padding: 1.5rem; } }
 
-        .welcome-section { margin-bottom: 2.5rem; }
-        .welcome-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .welcome-date { color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
+        /* Welcome & Quote */
+        .hero-section { margin-bottom: 3rem; animation: slideDown 0.5s ease-out; }
+        .welcome-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.03em; }
+        .quote-box {
+            display: inline-flex; align-items: center; gap: 0.75rem;
+            color: var(--text-muted); font-size: 0.95rem; font-style: italic;
+            background-color: var(--bg-card); padding: 0.5rem 1rem;
+            border-radius: 99px; border: 1px solid var(--border-color);
+            margin-top: 0.5rem;
         }
-        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
+        .quote-box i { color: var(--primary); }
 
-        /* Grid */
+        /* Quick Actions */
+        .quick-actions {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem; margin-bottom: 2.5rem;
+        }
+        .action-btn {
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+            color: var(--text-main); text-decoration: none;
+            transition: var(--transition); font-weight: 600; font-size: 0.9rem;
+        }
+        .action-btn:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .action-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background-color: var(--bg-active); color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+        }
+
+        /* Apps Grid */
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .section-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        
         .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem; padding-bottom: 4rem;
         }
 
         .app-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition);
-            text-decoration: none;
-            color: var(--text-main);
-            position: relative;
-            box-shadow: var(--shadow-sm);
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl); padding: 1.75rem;
+            display: flex; flex-direction: column; transition: var(--transition);
+            text-decoration: none; color: var(--text-main); position: relative;
+            box-shadow: var(--shadow-sm); overflow: hidden;
         }
-
-        .app-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-card);
-            border-color: var(--primary);
+        .app-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background-color: transparent; transition: var(--transition);
         }
+        .app-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); border-color: rgba(37, 99, 235, 0.3); }
+        .app-card:hover::before { background-color: var(--primary); }
 
-        .app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+        .app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
         .app-icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            background-color: var(--bg-hover);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-main);
-            font-size: 1.75rem;
-            transition: var(--transition);
+            width: 64px; height: 64px; border-radius: 18px;
+            background-color: var(--bg-hover); display: flex; align-items: center; justify-content: center;
+            color: var(--text-main); font-size: 2rem; transition: var(--transition);
+            box-shadow: inset 0 0 0 1px var(--border-color);
         }
-        .app-card:hover .app-icon { background-color: var(--primary); color: white; }
+        .app-card:hover .app-icon { background-color: var(--primary); color: white; box-shadow: none; }
         
-        .app-status {
-            font-size: 0.75rem; font-weight: 600;
-            padding: 0.25rem 0.75rem;
-            border-radius: 99px;
-            background-color: var(--bg-hover);
-            color: var(--text-muted);
+        .app-badge {
+            font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem;
+            border-radius: 99px; background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success); text-transform: uppercase; letter-spacing: 0.05em;
         }
 
-        .app-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .app-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; flex: 1; }
+        .app-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .app-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; flex: 1; }
         
         .app-footer {
-            display: flex; align-items: center; justify-content: space-between;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.9rem; font-weight: 500; color: var(--primary);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-top: 1.25rem; border-top: 1px solid var(--border-color);
         }
+        .btn-launch {
+            font-size: 0.9rem; font-weight: 600; color: white;
+            background-color: var(--primary); padding: 0.5rem 1rem;
+            border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;
+            transition: var(--transition);
+        }
+        .app-card:hover .btn-launch { background-color: var(--primary-hover); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
 
-        /* Overlay */
+        /* Notification Panel */
+        .notification-panel {
+            position: absolute; top: 75px; right: 2rem; width: 320px;
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+            z-index: 40; transform: translateY(-10px); opacity: 0; pointer-events: none;
+            transition: var(--transition); display: flex; flex-direction: column;
+        }
+        .notification-panel.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .notif-header { padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 600; font-size: 0.95rem; }
+        .notif-body { max-height: 300px; overflow-y: auto; }
+        .notif-item { padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
+        .notif-item strong { display: block; color: var(--text-main); margin-bottom: 0.25rem; }
+
+        /* Mobile Overlay */
         .overlay {
             position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 40;
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
@@ -270,32 +311,14 @@
         }
         .overlay.open { opacity: 1; pointer-events: auto; }
 
-        /* Actions */
-        .btn-icon {
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; padding: 0.5rem; border-radius: 50%;
-            transition: var(--transition); display: flex;
-        }
-        .btn-icon:hover { color: var(--text-main); background-color: var(--bg-hover); }
-
-        .btn-logout {
-            width: 100%; margin-top: 0.5rem;
-            padding: 0.5rem; font-size: 0.85rem; color: var(--text-muted);
-            background: none; border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm); cursor: pointer;
-            transition: var(--transition);
-        }
-        .btn-logout:hover { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.05); }
-
         /* Loaders / Skeletons */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-hover) 25%, var(--border-color) 50%, var(--bg-hover) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 4px;
-            color: transparent !important;
+            background-size: 200% 100%; animation: shimmer 1.5s infinite;
+            border-radius: 6px; color: transparent !important;
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -307,26 +330,52 @@
 
     <div class="overlay" id="sidebar-overlay"></div>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="brand-section">
-            <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="brand-logo">
-            <span class="brand-name">StackBase</span>
+    <div class="notification-panel" id="notif-panel">
+        <div class="notif-header">Notifications</div>
+        <div class="notif-body">
+            <div class="notif-item">
+                <strong>Welcome to StackBase</strong>
+                Your workspace is ready.
+            </div>
+            <div class="notif-item">
+                <strong>System Update</strong>
+                TimeTrekker 1.0 is now live.
+            </div>
         </div>
+        <div style="padding: 0.75rem; text-align: center; font-size: 0.8rem; color: var(--primary); cursor: pointer; border-top: 1px solid var(--border-color);">
+            Mark all read
+        </div>
+    </div>
 
-        <nav class="nav-links">
-            <a href="#" class="nav-item active">
-                <i class="ph ph-squares-four"></i>
-                Dashboard
-            </a>
-            <a href="#" class="nav-item">
-                <i class="ph ph-chart-line-up"></i>
-                Activity
-            </a>
-            <a href="#" class="nav-item">
-                <i class="ph ph-gear"></i>
-                Settings
-            </a>
-        </nav>
+    <aside class="sidebar" id="sidebar">
+        <div>
+            <div class="brand-section">
+                <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="brand-logo">
+                <span class="brand-name">StackBase</span>
+            </div>
+
+            <nav class="nav-links">
+                <div class="nav-section-label">Platform</div>
+                <a href="#" class="nav-item active">
+                    <i class="ph ph-squares-four"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="alert('Analytics Module coming soon')">
+                    <i class="ph ph-chart-line-up"></i>
+                    Analytics
+                </a>
+                
+                <div class="nav-section-label">Support</div>
+                <a href="#" class="nav-item" onclick="alert('Help Center coming soon')">
+                    <i class="ph ph-life-buoy"></i>
+                    Help Center
+                </a>
+                <a href="#" class="nav-item" onclick="alert('Settings coming soon')">
+                    <i class="ph ph-gear"></i>
+                    Settings
+                </a>
+            </nav>
+        </div>
 
         <div class="user-profile">
             <div class="user-card">
@@ -334,82 +383,106 @@
                     <div class="skeleton" style="width:100%;height:100%"></div>
                 </div>
                 <div class="user-info">
-                    <div class="user-name skeleton" id="user-name">User Name</div>
-                    <div class="user-email skeleton" id="user-email" style="margin-top:4px; width: 80%">email@example.com</div>
+                    <div class="user-name skeleton" id="user-name" style="width: 80%; height: 14px; margin-bottom: 4px;"></div>
+                    <div class="user-email skeleton" id="user-email" style="width: 60%; height: 12px;"></div>
                 </div>
+                <button id="logoutBtn" class="btn-icon" title="Sign Out" style="margin-left: auto; padding: 4px;">
+                    <i class="ph ph-sign-out" style="color: #ef4444;"></i>
+                </button>
             </div>
-            <button id="logoutBtn" class="btn-logout">Sign Out</button>
         </div>
     </aside>
 
     <div class="main-wrapper">
         <header class="header">
-            <div style="display:flex; align-items:center; gap:1rem;">
-                <button class="menu-btn" id="menu-toggle">
+            <div style="display:flex; align-items:center; gap:1rem; flex:1;">
+                <button class="btn-icon" id="menu-toggle" style="display:block; margin-right: 0.5rem;">
                     <i class="ph ph-list" style="font-size: 1.5rem;"></i>
                 </button>
+                
+                <div class="search-container">
+                    <i class="ph ph-magnifying-glass search-icon"></i>
+                    <input type="text" id="app-search" class="search-input" placeholder="Find an app...">
+                </div>
             </div>
             
-            <button id="themeToggle" class="btn-icon" aria-label="Toggle Theme">
-                <i class="ph ph-sun" id="icon-sun" style="font-size:1.25rem; display:none;"></i>
-                <i class="ph ph-moon" id="icon-moon" style="font-size:1.25rem;"></i>
-            </button>
+            <div class="header-actions">
+                <button class="btn-icon" id="notif-btn" aria-label="Notifications">
+                    <i class="ph ph-bell" style="font-size:1.25rem;"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <button id="themeToggle" class="btn-icon" aria-label="Toggle Theme">
+                    <i class="ph ph-sun" id="icon-sun" style="font-size:1.25rem; display:none;"></i>
+                    <i class="ph ph-moon" id="icon-moon" style="font-size:1.25rem;"></i>
+                </button>
+            </div>
         </header>
 
         <div class="content-scroll">
             <div class="container">
                 
-                <div class="welcome-section fade-in">
+                <div class="hero-section">
                     <h1 class="welcome-title" id="greeting-text">Welcome back</h1>
-                    <div class="welcome-date">
-                        <i class="ph ph-calendar-blank"></i>
-                        <span id="current-date">Loading date...</span>
+                    <div class="quote-box" id="daily-quote">
+                        <i class="ph-fill ph-quotes"></i>
+                        <span>Loading inspiration...</span>
                     </div>
                 </div>
 
-                <div class="apps-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-bottom: 2rem;">
-                    <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:0.5rem;">
-                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Apps Connected</span>
-                        <span style="font-size:1.5rem; font-weight:700;">1</span>
-                    </div>
-                    <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:0.5rem; opacity: 0.6;">
-                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Pending Tasks</span>
-                        <span style="font-size:1.5rem; font-weight:700;">--</span>
-                    </div>
+                <div class="quick-actions fade-in" style="animation-delay: 0.1s;">
+                    <a href="https://stack-base.github.io/timetrekker/application?action=focus" class="action-btn">
+                        <div class="action-icon"><i class="ph-fill ph-timer"></i></div>
+                        Start Focus Session
+                    </a>
+                    <a href="https://stack-base.github.io/timetrekker/application?action=newtask" class="action-btn">
+                        <div class="action-icon"><i class="ph-fill ph-plus-circle"></i></div>
+                        Create New Task
+                    </a>
+                    <a href="#" class="action-btn" onclick="document.documentElement.classList.toggle('dark'); return false;">
+                        <div class="action-icon"><i class="ph-fill ph-paint-brush"></i></div>
+                        Toggle Theme
+                    </a>
                 </div>
 
                 <div class="section-header">
                     <h2 class="section-title">My Apps</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">1 Active</span>
                 </div>
 
-                <div class="apps-grid fade-in">
-                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card">
+                <div class="apps-grid fade-in" id="apps-grid" style="animation-delay: 0.2s;">
+                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item" data-name="timetrekker productivity time">
                         <div class="app-header">
                             <div class="app-icon" style="color: #ef4444; background-color: rgba(239, 68, 68, 0.1);">
                                 <i class="ph-fill ph-mountains"></i>
                             </div>
-                            <span class="app-status">Active</span>
+                            <span class="app-badge">Installed</span>
                         </div>
                         <div class="app-name">TimeTrekker</div>
-                        <p class="app-desc">Production-grade focus timer and task manager. Track your pomodoros and manage projects.</p>
+                        <p class="app-desc">Production-grade focus timer and task manager. Track pomodoros, manage projects, and analyze productivity.</p>
                         <div class="app-footer">
-                            <span>Launch App</span>
-                            <i class="ph-bold ph-arrow-right"></i>
+                            <div class="btn-launch">
+                                <span>Launch</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </div>
                         </div>
                     </a>
 
-                    <div class="app-card" style="opacity: 0.6; cursor: default; border-style: dashed;">
+                    <div class="app-card" style="border-style: dashed; opacity: 0.7; cursor: default;">
                         <div class="app-header">
-                            <div class="app-icon">
+                            <div class="app-icon" style="background-color: var(--bg-hover);">
                                 <i class="ph ph-plus"></i>
                             </div>
                         </div>
-                        <div class="app-name">Add New App</div>
-                        <p class="app-desc">Explore the marketplace to add more tools to your StackBase workspace.</p>
-                        <div class="app-footer" style="color: var(--text-muted);">
-                            <span>Coming Soon</span>
+                        <div class="app-name">Add Module</div>
+                        <p class="app-desc">Visit the StackBase marketplace to discover new tools for your workflow.</p>
+                        <div class="app-footer" style="justify-content: flex-start;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Coming Soon</span>
                         </div>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.8rem;">
+                    <p>&copy; 2025 StackBase Ecosystem. All systems operational.</p>
                 </div>
 
             </div>
@@ -446,39 +519,49 @@
             sidebarOverlay: document.getElementById('sidebar-overlay'),
             menuToggle: document.getElementById('menu-toggle'),
             greetingText: document.getElementById('greeting-text'),
-            currentDate: document.getElementById('current-date')
+            dailyQuote: document.getElementById('daily-quote'),
+            searchInput: document.getElementById('app-search'),
+            notifBtn: document.getElementById('notif-btn'),
+            notifPanel: document.getElementById('notif-panel')
         };
 
+        // Quotes Logic
+        const quotes = [
+            "Focus on being productive instead of busy.",
+            "The secret of getting ahead is getting started.",
+            "Your future is created by what you do today, not tomorrow.",
+            "Don't watch the clock; do what it does. Keep going.",
+            "Small progress is still progress."
+        ];
+        dom.dailyQuote.querySelector('span').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
         // Date & Greeting Logic
-        function updateDateAndGreeting(userName = '') {
-            const now = new Date();
-            const hour = now.getHours();
+        function updateGreeting(userName = '') {
+            const hour = new Date().getHours();
             let greeting = 'Good evening';
             if (hour < 12) greeting = 'Good morning';
             else if (hour < 18) greeting = 'Good afternoon';
             
             const namePart = userName ? `, ${userName.split(' ')[0]}` : '';
             dom.greetingText.textContent = `${greeting}${namePart}`;
-
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            dom.currentDate.textContent = now.toLocaleDateString('en-US', options);
         }
-        updateDateAndGreeting();
+        updateGreeting();
 
         // Auth Logic
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 renderProfile(user);
-                updateDateAndGreeting(user.displayName || user.email.split('@')[0]);
+                updateGreeting(user.displayName || user.email.split('@')[0]);
             } else {
                 window.location.replace('login.html');
             }
         });
 
         function renderProfile(user) {
-            // Remove skeleton classes
             dom.userName.classList.remove('skeleton');
             dom.userEmail.classList.remove('skeleton');
+            dom.userName.style.width = 'auto'; dom.userName.style.height = 'auto';
+            dom.userEmail.style.width = 'auto'; dom.userEmail.style.height = 'auto';
 
             dom.userEmail.textContent = user.email;
             const displayName = user.displayName || user.email.split('@')[0];
@@ -495,27 +578,56 @@
             }
         }
 
-        // Sidebar Toggles
+        // UI Interactions
         function toggleSidebar() {
             const isOpen = dom.sidebar.classList.contains('open');
-            if (isOpen) {
-                dom.sidebar.classList.remove('open');
-                dom.sidebarOverlay.classList.remove('open');
-            } else {
-                dom.sidebar.classList.add('open');
-                dom.sidebarOverlay.classList.add('open');
-            }
+            dom.sidebar.classList.toggle('open', !isOpen);
+            dom.sidebarOverlay.classList.toggle('open', !isOpen);
         }
         dom.menuToggle.addEventListener('click', toggleSidebar);
         dom.sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // Logout
-        dom.logoutBtn.addEventListener('click', async () => {
-            dom.logoutBtn.textContent = 'Signing out...';
-            try { await signOut(auth); } catch (e) { alert('Sign out failed'); }
+        // Notifications
+        dom.notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dom.notifPanel.classList.toggle('open');
+            dom.notifBtn.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!dom.notifPanel.contains(e.target) && e.target !== dom.notifBtn) {
+                dom.notifPanel.classList.remove('open');
+                dom.notifBtn.classList.remove('active');
+            }
         });
 
-        // Theme Logic
+        // Search Filter
+        dom.searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const apps = document.querySelectorAll('.app-item');
+            apps.forEach(app => {
+                const name = app.getAttribute('data-name');
+                if(name.includes(term)) app.style.display = 'flex';
+                else app.style.display = 'none';
+            });
+        });
+
+        // Responsive Media Query for Menu Button
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        function handleTabletChange(e) {
+            if (e.matches) dom.menuToggle.style.display = 'none';
+            else dom.menuToggle.style.display = 'block';
+        }
+        mediaQuery.addListener(handleTabletChange);
+        handleTabletChange(mediaQuery);
+
+        // Logout
+        dom.logoutBtn.addEventListener('click', async () => {
+            if(confirm('Are you sure you want to sign out?')) {
+                try { await signOut(auth); } catch (e) { alert('Sign out failed'); }
+            }
+        });
+
+        // Theme
         dom.themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
@@ -529,7 +641,6 @@
             document.getElementById('theme-color-meta').setAttribute('content', isDark ? '#000000' : '#ffffff');
         }
         updateThemeIcon(document.documentElement.classList.contains('dark'));
-
     </script>
 </body>
 </html>
