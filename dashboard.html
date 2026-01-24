@@ -165,7 +165,7 @@
             padding: 0 1rem;
             pointer-events: none;
             z-index: 30;
-            margin-bottom: -60px;
+            margin-bottom: -60px; /* Pull content up under the header */
         }
 
         .header-pill {
@@ -221,15 +221,15 @@
         .menu-btn { display: flex; align-items: center; justify-content: center; margin-right: 0.5rem; color: var(--text-main); cursor: pointer; background: none; border: none; }
         @media (min-width: 1024px) { .menu-btn { display: none; } }
 
-        /* Content Scroll */
+        /* Content Scroll Area - Removed Padding so Hero touches edges */
         .content-scroll { 
             flex: 1; 
-            padding: 2rem; 
-            padding-top: 6rem;
+            padding: 0; /* Padding removed for edge-to-edge hero */
         }
-        @media (max-width: 768px) { .content-scroll { padding: 1.5rem; padding-top: 5.5rem; } }
-
+        
         .container { max-width: 1200px; margin: 0 auto; }
+        .apps-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        @media (max-width: 768px) { .apps-container { padding: 1.5rem; } }
 
         /* --- DESKTOP APP-MODE OVERRIDES --- */
         @media (min-width: 1024px) {
@@ -246,7 +246,7 @@
 
             .header-container {
                 position: absolute;
-                top: 1rem;
+                top: 1.5rem;
                 margin-bottom: 0;
             }
 
@@ -256,40 +256,41 @@
             }
         }
 
-        /* --- HERO SECTION --- */
+        /* --- EDGE-TO-EDGE HERO SECTION --- */
         .hero-section {
-            margin-bottom: 2.5rem;
-            animation: slideDown 0.5s ease-out;
-            /* FIX: Adjusted padding for better space management while keeping the look */
-            padding: 3rem 2rem; 
+            margin: 0;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0;
+            
+            /* Spacing to clear the floating header */
+            padding: 8rem 0 3rem 0; 
+            
             background: 
-                radial-gradient(70% 70% at 90% 10%, rgba(37, 99, 235, 0.08) 0%, transparent 100%),
-                radial-gradient(70% 70% at 10% 90%, rgba(13, 148, 136, 0.08) 0%, transparent 100%);
-            border-radius: 24px;
-            border: 1px solid rgba(0,0,0,0.05); /* Lighter border */
+                radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.06) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(13, 148, 136, 0.06) 0%, transparent 60%);
             text-align: left;
             position: relative;
-            overflow: hidden;
+            width: 100%;
         }
         
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 2rem 1.5rem; /* Reduced padding on mobile */
-                border-radius: 20px;
-            }
-            .welcome-title {
-                font-size: 1.8rem; /* Dynamic font size */
-            }
-        }
-
         html.dark .hero-section {
-            border-color: var(--border-color);
             background: 
-                radial-gradient(70% 70% at 90% 10%, rgba(59, 130, 246, 0.15) 0%, transparent 100%),
-                radial-gradient(70% 70% at 10% 90%, rgba(13, 148, 136, 0.1) 0%, transparent 100%);
+                radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(13, 148, 136, 0.08) 0%, transparent 60%);
         }
+        
+        /* Inner container to align text with the grid below */
+        .hero-content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        @media (max-width: 768px) { .hero-content-wrapper { padding: 0 1.5rem; } }
 
-        .welcome-title { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.03em; }
+        .welcome-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.03em; }
+        @media (max-width: 768px) { .welcome-title { font-size: 2rem; } }
+        
         .quote-box {
             display: inline-flex; align-items: center; gap: 0.75rem;
             color: var(--text-muted); font-size: 1rem; font-style: italic;
@@ -525,16 +526,18 @@
         </div>
 
         <div class="content-scroll">
-            <div class="container">
-                
-                <div class="hero-section">
+            
+            <div class="hero-section">
+                <div class="hero-content-wrapper">
                     <h1 class="welcome-title" id="greeting-text">Welcome back</h1>
                     <div class="quote-box" id="daily-quote">
                         <i class="ph-fill ph-quotes"></i>
                         <span>Loading inspiration...</span>
                     </div>
                 </div>
+            </div>
 
+            <div class="apps-container">
                 <div class="section-header">
                     <h2 class="section-title">My Apps</h2>
                     <button id="edit-apps-btn" class="btn-edit">Edit</button>
@@ -722,7 +725,6 @@
         }
 
         // --- APP EDIT/REMOVE LOGIC ---
-        // 1. Load hidden state
         let hiddenApps = JSON.parse(localStorage.getItem('stackbase_hidden_apps') || '[]');
         function applyHiddenState() {
             document.querySelectorAll('.app-item').forEach(card => {
@@ -735,14 +737,12 @@
         }
         applyHiddenState();
 
-        // 2. Toggle Edit Mode
         let isEditMode = false;
         dom.editBtn.addEventListener('click', () => {
             isEditMode = !isEditMode;
             dom.appsGrid.classList.toggle('edit-mode', isEditMode);
             dom.editBtn.textContent = isEditMode ? 'Done' : 'Edit';
             
-            // In Edit mode, prevent links from working
             document.querySelectorAll('.app-item').forEach(card => {
                 if(isEditMode) {
                     card.addEventListener('click', preventNav);
@@ -753,27 +753,23 @@
         });
         
         function preventNav(e) {
-            // Only prevent if it's NOT the remove button being clicked (which is handled separately)
             if(!e.target.closest('.remove-badge')) {
                 e.preventDefault(); 
             }
         }
 
-        // 3. Handle Remove Click
         document.querySelectorAll('.remove-badge').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.preventDefault(); // Stop link nav
-                e.stopPropagation(); // Stop bubbling
+                e.preventDefault(); 
+                e.stopPropagation(); 
                 
                 const card = btn.closest('.app-item');
                 const id = card.dataset.id;
                 
-                // Animate removal
                 card.style.opacity = '0';
                 card.style.transform = 'scale(0.9)';
                 setTimeout(() => {
                     card.classList.add('hidden');
-                    // Reset inline styles for when it comes back
                     card.style.opacity = '';
                     card.style.transform = '';
                     
@@ -783,7 +779,6 @@
             });
         });
 
-        // 4. Reset View (Recovery)
         dom.resetViewBtn.addEventListener('click', () => {
             if(confirm('Restore all hidden apps?')) {
                 hiddenApps = [];
@@ -822,7 +817,6 @@
             const apps = document.querySelectorAll('.app-item');
             apps.forEach(app => {
                 const name = app.getAttribute('data-name');
-                // Ensure we respect hidden state + search filter
                 const isDeleted = app.classList.contains('hidden') && !app.style.display; 
                 if(!isDeleted) {
                     if(name.includes(term)) app.style.display = 'flex';
