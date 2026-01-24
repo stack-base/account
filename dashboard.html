@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff" id="theme-color-meta">
-    <title>StackBase | Dashboard</title>
+    <title>StackBase | Hub</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
 
     <script>
@@ -29,153 +28,327 @@
     </script>
 
     <style>
-        /* CSS Variables - Matched to Login Page */
         :root {
-            --bg-page: #ffffff;
+            --bg-page: #f9fafb;
             --bg-panel: #ffffff;
+            --bg-hover: #f3f4f6;
             --text-main: #1a1a1a;
             --text-muted: #6b7280;
             --border-color: #e5e7eb;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --error: #ef4444;
+            --radius-card: 16px;
             --radius-btn: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         html.dark {
             --bg-page: #000000;
-            --bg-panel: #000000;
+            --bg-panel: #111111;
+            --bg-hover: #1f2937;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
-            --border-color: #374151;
+            --border-color: #27272a;
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
-            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --shadow-sm: none;
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-page);
             color: var(--text-main);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
             transition: background-color 0.3s ease;
         }
 
-        .container {
+        .navbar {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+        
+        .brand img { height: 32px; width: 32px; }
+        .brand span { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
             width: 100%;
-            max-width: 480px;
-            padding: 2rem;
-            text-align: center;
+        }
+
+        @media (min-width: 850px) {
+            .layout { grid-template-columns: 320px 1fr; align-items: start; }
         }
 
         .card {
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 3rem 2rem;
-            box-shadow: var(--shadow-card);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: var(--transition);
+            border-radius: var(--radius-card);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
-        .card.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
 
-        .user-avatar {
+        .avatar-container {
             width: 80px;
             height: 80px;
-            background-color: var(--primary);
-            color: white;
             border-radius: 50%;
+            background-color: var(--bg-hover);
+            margin-bottom: 1rem;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
+            border: 2px solid var(--border-color);
         }
 
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-text { font-size: 2rem; font-weight: 600; color: var(--text-muted); }
 
-        p {
-            color: var(--text-muted);
-            margin-bottom: 2.5rem;
-            line-height: 1.5;
-            word-break: break-all;
+        .user-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-main); }
+        .user-email { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; word-break: break-all; }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
         }
+        .info-row:last-of-type { border-bottom: none; margin-bottom: 1.5rem; }
+        .info-label { color: var(--text-muted); }
+        .info-value { font-weight: 500; }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: var(--radius-btn);
+        .section-title {
+            font-size: 1.1rem;
             font-weight: 600;
-            font-size: 0.95rem;
-            border: none;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .app-card {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: var(--transition);
             cursor: pointer;
+            height: 100%;
+        }
+
+        .app-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: var(--bg-hover);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
             transition: var(--transition);
         }
 
-        .btn-danger {
+        .app-card:hover .app-icon { background-color: var(--primary); color: white; }
+
+        .app-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .app-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius-btn);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-logout {
             background-color: transparent;
-            color: var(--error);
+            color: var(--text-main);
             border: 1px solid var(--border-color);
         }
-
-        .btn-danger:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-            border-color: var(--error);
-        }
-
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--primary);
+        .btn-logout:hover { background-color: var(--bg-hover); color: var(--error); border-color: var(--error); }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            transition: var(--transition);
         }
+        .btn-icon:hover { color: var(--text-main); background-color: var(--bg-hover); }
 
+        #loading-overlay {
+            position: fixed; inset: 0; background-color: var(--bg-page);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+        }
+        .spinner {
+            width: 32px; height: 32px; border: 3px solid var(--border-color);
+            border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Hide elements initially */
         .hidden { display: none !important; }
+
+        /* Add Item Card (Dashed) */
+        .app-card.add-new {
+            border: 2px dashed var(--border-color);
+            background-color: transparent;
+            opacity: 0.6;
+        }
+        .app-card.add-new:hover { opacity: 1; border-color: var(--primary); }
+
     </style>
 </head>
 <body>
 
-    <div id="loading-view">
-        <div class="loader"></div>
-    </div>
+    <div id="loading-overlay"><div class="spinner"></div></div>
 
-    <div id="dashboard-view" class="container hidden">
-        <div class="card" id="dashboard-card">
-            <div class="user-avatar" id="user-initial">U</div>
-            <h1>Welcome Back</h1>
-            <p id="user-email">...</p>
-            <button id="signOutBtn" class="btn btn-danger">Sign Out</button>
-        </div>
+    <nav class="navbar">
+        <a href="#" class="brand">
+            <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo">
+            <span>StackBase</span>
+        </a>
+        <button id="themeToggle" class="btn-icon" aria-label="Toggle Theme">
+            <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        </button>
+    </nav>
+
+    <div class="layout hidden" id="main-content">
+        <aside>
+            <div class="card">
+                <div class="profile-header">
+                    <div class="avatar-container" id="avatar-container">
+                        </div>
+                    <h2 class="user-name" id="user-name">Loading...</h2>
+                    <p class="user-email" id="user-email">...</p>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Account Type</span>
+                    <span class="info-value">Personal</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Member Since</span>
+                    <span class="info-value" id="member-since">-</span>
+                </div>
+
+                <button id="logoutBtn" class="btn btn-logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <main>
+            <div class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                My Apps
+            </div>
+            
+            <div class="app-grid">
+                <a href="#" class="app-card" onclick="alert('Link to TimeTrekker App')">
+                    <div class="app-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="app-name">TimeTrekker</div>
+                    <div class="app-desc">Productivity</div>
+                </a>
+
+                <a href="#" class="app-card" onclick="alert('Link to Notes App')">
+                    <div class="app-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <div class="app-name">Notes</div>
+                    <div class="app-desc">Personal</div>
+                </a>
+
+                <a href="#" class="app-card" onclick="alert('Link to Analytics')">
+                    <div class="app-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div class="app-name">Analytics</div>
+                    <div class="app-desc">Data View</div>
+                </a>
+
+                <a href="#" class="app-card add-new">
+                    <div class="app-icon" style="background: none; color: var(--text-muted);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                    </div>
+                    <div class="app-name">Add App</div>
+                </a>
+            </div>
+        </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIG FROM YOUR LOGIN PAGE
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
             authDomain: "timetrekker-app.firebaseapp.com",
@@ -190,50 +363,86 @@
         const auth = getAuth(app);
 
         const dom = {
-            loadingView: document.getElementById('loading-view'),
-            dashboardView: document.getElementById('dashboard-view'),
-            dashboardCard: document.getElementById('dashboard-card'),
-            emailDisplay: document.getElementById('user-email'),
-            initialDisplay: document.getElementById('user-initial'),
-            signOutBtn: document.getElementById('signOutBtn')
+            loadingOverlay: document.getElementById('loading-overlay'),
+            mainContent: document.getElementById('main-content'),
+            userName: document.getElementById('user-name'),
+            userEmail: document.getElementById('user-email'),
+            avatarContainer: document.getElementById('avatar-container'),
+            memberSince: document.getElementById('member-since'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            themeToggle: document.getElementById('themeToggle'),
+            iconSun: document.getElementById('icon-sun'),
+            iconMoon: document.getElementById('icon-moon')
         };
 
-        // Determine where to redirect on logout
         const loginPageUrl = 'login.html'; 
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
-                dom.loadingView.classList.add('hidden');
-                dom.dashboardView.classList.remove('hidden');
-                
-                // Add simple fade-in animation
-                setTimeout(() => dom.dashboardCard.classList.add('visible'), 50);
-
-                // Populate Data
-                dom.emailDisplay.textContent = user.email;
-                if(user.email) {
-                    dom.initialDisplay.textContent = user.email.charAt(0).toUpperCase();
-                }
-
+                renderProfile(user);
+                dom.loadingOverlay.classList.add('hidden');
+                dom.mainContent.classList.remove('hidden');
             } else {
-                // No user is signed in, redirect immediately
                 window.location.replace(loginPageUrl);
             }
         });
 
-        dom.signOutBtn.addEventListener('click', async () => {
-            const originalText = dom.signOutBtn.textContent;
-            dom.signOutBtn.textContent = 'Signing out...';
+        function renderProfile(user) {
+            // 1. Email
+            dom.userEmail.textContent = user.email;
+
+            // 2. Name
+            dom.userName.textContent = user.displayName || user.email.split('@')[0];
+
+            // 3. Avatar
+            dom.avatarContainer.innerHTML = ''; // clear
+            if (user.photoURL) {
+                const img = document.createElement('img');
+                img.src = user.photoURL;
+                img.className = 'avatar-img';
+                img.alt = 'Profile';
+                dom.avatarContainer.appendChild(img);
+            } else {
+                const initial = (user.displayName || user.email).charAt(0).toUpperCase();
+                const text = document.createElement('div');
+                text.className = 'avatar-text';
+                text.textContent = initial;
+                dom.avatarContainer.appendChild(text);
+            }
+
+            // 4. Member Since
+            if (user.metadata && user.metadata.creationTime) {
+                const date = new Date(user.metadata.creationTime);
+                dom.memberSince.textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            }
+        }
+
+        dom.logoutBtn.addEventListener('click', async () => {
+            const originalText = dom.logoutBtn.innerHTML;
+            dom.logoutBtn.textContent = 'Signing out...';
             try {
                 await signOut(auth);
-                // onAuthStateChanged will handle the redirect
             } catch (error) {
-                console.error('Error signing out:', error);
-                dom.signOutBtn.textContent = originalText;
-                alert('Failed to sign out');
+                console.error(error);
+                dom.logoutBtn.innerHTML = originalText;
+                alert('Sign out failed');
             }
         });
+
+        // Theme Toggle Logic
+        dom.themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        });
+
+        function updateThemeIcon(isDark) {
+            dom.iconSun.style.display = isDark ? 'block' : 'none';
+            dom.iconMoon.style.display = isDark ? 'none' : 'block';
+            document.getElementById('theme-color-meta').setAttribute('content', isDark ? '#000000' : '#ffffff');
+        }
+        updateThemeIcon(document.documentElement.classList.contains('dark'));
     </script>
 </body>
 </html>
