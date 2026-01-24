@@ -93,32 +93,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         /* --- CUSTOM SCROLLBAR --- */
-        ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: var(--scrollbar-thumb);
-            border-radius: 99px;
-            border: 3px solid transparent; /* Creates padding effect */
-            background-clip: content-box;
-            transition: background-color 0.2s ease;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: var(--scrollbar-thumb-hover);
-        }
-
-        /* Firefox Support */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: var(--scrollbar-thumb) transparent;
-        }
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: 99px; border: 3px solid transparent; background-clip: content-box; transition: background-color 0.2s ease; }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-thumb-hover); }
+        * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -518,7 +497,7 @@
         .profile-view {
             max-width: 1000px;
             margin: 2rem auto;
-            /* PADDING FIX HERE */
+            /* Default desktop padding */
             padding-top: 6rem; 
             padding-left: 1.5rem;
             padding-right: 1.5rem;
@@ -595,7 +574,7 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-xl);
-            padding: 2.5rem;
+            padding: 2.5rem; /* Desktop Padding */
             box-shadow: var(--shadow-sm);
         }
 
@@ -671,6 +650,28 @@
         }
         .btn-google-link:hover {
             background-color: var(--bg-hover);
+        }
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 768px) {
+            .profile-view {
+                /* Reduced side padding for mobile container */
+                padding-left: 1rem; 
+                padding-right: 1rem;
+            }
+            
+            .settings-card {
+                /* Drastically reduced internal card padding for mobile */
+                padding: 1.25rem;
+                /* Slightly tighter radius so content doesn't get cut off */
+                border-radius: var(--radius-lg); 
+            }
+            
+            .identity-content {
+                /* Reduced identity card padding */
+                padding-left: 1.25rem;
+                padding-right: 1.25rem;
+            }
         }
 
     </style>
