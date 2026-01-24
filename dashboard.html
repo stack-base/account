@@ -44,6 +44,12 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --success: #10b981;
+            
+            /* App Specific Colors */
+            --color-timetrekker: #ef4444;
+            --color-swiftinvoice: #0d9488; /* Teal from SwiftInvoice */
+            --color-datastudio: #7c3aed;   /* Violet from DataStudio */
+
             --radius-xl: 20px;
             --radius-lg: 16px;
             --radius-md: 12px;
@@ -82,35 +88,59 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Sidebar */
+        /* Sidebar - Full Screen Mobile */
         .sidebar {
-            width: 260px;
+            width: 100%; /* Full width on mobile */
+            height: 100%;
             background-color: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: fixed;
-            inset: 0 auto 0 0;
-            z-index: 50;
+            inset: 0; /* Full screen coverage */
+            z-index: 100;
             transform: translateX(-100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (min-width: 1024px) {
-            .sidebar { position: static; transform: translateX(0); }
+            .sidebar { 
+                width: 260px; 
+                position: static; 
+                transform: translateX(0); 
+                z-index: 50;
+            }
         }
 
-        .sidebar.open { transform: translateX(0); box-shadow: 10px 0 25px rgba(0,0,0,0.1); }
+        .sidebar.open { transform: translateX(0); }
 
         .brand-section {
             padding: 1.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space for close button */
+        }
+        .brand-logo-container {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
         .brand-logo { width: 32px; height: 32px; }
         .brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
+
+        .sidebar-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            transition: var(--transition);
+        }
+        .sidebar-close-btn:hover { background-color: var(--bg-hover); color: var(--text-main); }
+        @media (min-width: 1024px) { .sidebar-close-btn { display: none; } }
 
         .nav-links { padding: 1rem; flex: 1; }
         .nav-section-label {
@@ -136,6 +166,8 @@
             padding: 1rem;
             border-top: 1px solid var(--border-color);
             background-color: var(--bg-sidebar);
+            /* Ensure user profile stays at bottom on mobile */
+            margin-top: auto;
         }
         .user-card {
             display: flex; align-items: center; gap: 0.75rem;
@@ -217,25 +249,6 @@
         }
         .quote-box i { color: var(--primary); }
 
-        /* Quick Actions */
-        .quick-actions {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem; margin-bottom: 2.5rem;
-        }
-        .action-btn {
-            background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: var(--radius-md); padding: 1rem;
-            display: flex; align-items: center; gap: 0.75rem;
-            color: var(--text-main); text-decoration: none;
-            transition: var(--transition); font-weight: 600; font-size: 0.9rem;
-        }
-        .action-btn:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow-sm); }
-        .action-icon {
-            width: 32px; height: 32px; border-radius: 8px;
-            background-color: var(--bg-active); color: var(--primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-        }
-
         /* Apps Grid */
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
@@ -257,7 +270,10 @@
             background-color: transparent; transition: var(--transition);
         }
         .app-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); border-color: rgba(37, 99, 235, 0.3); }
-        .app-card:hover::before { background-color: var(--primary); }
+        /* App specific hover borders */
+        .app-card.timetrekker:hover::before { background-color: var(--color-timetrekker); }
+        .app-card.swiftinvoice:hover::before { background-color: var(--color-swiftinvoice); }
+        .app-card.datastudio:hover::before { background-color: var(--color-datastudio); }
 
         .app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
         .app-icon {
@@ -266,7 +282,16 @@
             color: var(--text-main); font-size: 2rem; transition: var(--transition);
             box-shadow: inset 0 0 0 1px var(--border-color);
         }
-        .app-card:hover .app-icon { background-color: var(--primary); color: white; box-shadow: none; }
+        
+        /* App specific icon colors */
+        .app-card.timetrekker .app-icon { color: var(--color-timetrekker); background-color: rgba(239, 68, 68, 0.1); }
+        .app-card.swiftinvoice .app-icon { color: var(--color-swiftinvoice); background-color: rgba(13, 148, 136, 0.1); }
+        .app-card.datastudio .app-icon { color: var(--color-datastudio); background-color: rgba(124, 58, 237, 0.1); }
+
+        .app-card:hover .app-icon { color: white; box-shadow: none; }
+        .app-card.timetrekker:hover .app-icon { background-color: var(--color-timetrekker); }
+        .app-card.swiftinvoice:hover .app-icon { background-color: var(--color-swiftinvoice); }
+        .app-card.datastudio:hover .app-icon { background-color: var(--color-datastudio); }
         
         .app-badge {
             font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem;
@@ -338,8 +363,8 @@
                 Your workspace is ready.
             </div>
             <div class="notif-item">
-                <strong>System Update</strong>
-                TimeTrekker 1.0 is now live.
+                <strong>New Apps Available</strong>
+                SwiftInvoice and DataStudio have been added.
             </div>
         </div>
         <div style="padding: 0.75rem; text-align: center; font-size: 0.8rem; color: var(--primary); cursor: pointer; border-top: 1px solid var(--border-color);">
@@ -350,8 +375,13 @@
     <aside class="sidebar" id="sidebar">
         <div>
             <div class="brand-section">
-                <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="brand-logo">
-                <span class="brand-name">StackBase</span>
+                <div class="brand-logo-container">
+                    <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="brand-logo">
+                    <span class="brand-name">StackBase</span>
+                </div>
+                <button class="sidebar-close-btn" id="sidebar-close-btn">
+                    <i class="ph ph-x" style="font-size: 1.5rem;"></i>
+                </button>
             </div>
 
             <nav class="nav-links">
@@ -429,36 +459,55 @@
                     </div>
                 </div>
 
-                <div class="quick-actions fade-in" style="animation-delay: 0.1s;">
-                    <a href="https://stack-base.github.io/timetrekker/application?action=focus" class="action-btn">
-                        <div class="action-icon"><i class="ph-fill ph-timer"></i></div>
-                        Start Focus Session
-                    </a>
-                    <a href="https://stack-base.github.io/timetrekker/application?action=newtask" class="action-btn">
-                        <div class="action-icon"><i class="ph-fill ph-plus-circle"></i></div>
-                        Create New Task
-                    </a>
-                    <a href="#" class="action-btn" onclick="document.documentElement.classList.toggle('dark'); return false;">
-                        <div class="action-icon"><i class="ph-fill ph-paint-brush"></i></div>
-                        Toggle Theme
-                    </a>
-                </div>
-
                 <div class="section-header">
                     <h2 class="section-title">My Apps</h2>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">1 Active</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">3 Active</span>
                 </div>
 
                 <div class="apps-grid fade-in" id="apps-grid" style="animation-delay: 0.2s;">
-                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item" data-name="timetrekker productivity time">
+                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item timetrekker" data-name="timetrekker productivity time">
                         <div class="app-header">
-                            <div class="app-icon" style="color: #ef4444; background-color: rgba(239, 68, 68, 0.1);">
+                            <div class="app-icon">
                                 <i class="ph-fill ph-mountains"></i>
                             </div>
                             <span class="app-badge">Installed</span>
                         </div>
                         <div class="app-name">TimeTrekker</div>
                         <p class="app-desc">Production-grade focus timer and task manager. Track pomodoros, manage projects, and analyze productivity.</p>
+                        <div class="app-footer">
+                            <div class="btn-launch">
+                                <span>Launch</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://stack-base.github.io/swiftinvoice/application" class="app-card app-item swiftinvoice" data-name="swiftinvoice invoice pdf finance">
+                        <div class="app-header">
+                            <div class="app-icon">
+                                <i class="ph-fill ph-receipt"></i>
+                            </div>
+                            <span class="app-badge">Installed</span>
+                        </div>
+                        <div class="app-name">SwiftInvoice</div>
+                        <p class="app-desc">Create professional invoices instantly. Manage clients, generate PDF reports, and track your billing history.</p>
+                        <div class="app-footer">
+                            <div class="btn-launch">
+                                <span>Launch</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://stack-base.github.io/swiftinvoice/studio" class="app-card app-item datastudio" data-name="datastudio analytics finance chart">
+                        <div class="app-header">
+                            <div class="app-icon">
+                                <i class="ph-fill ph-chart-bar"></i>
+                            </div>
+                            <span class="app-badge">Installed</span>
+                        </div>
+                        <div class="app-name">Data Studio</div>
+                        <p class="app-desc">Visual analytics for your invoice data. Track revenue trends, top clients, and financial performance.</p>
                         <div class="app-footer">
                             <div class="btn-launch">
                                 <span>Launch</span>
@@ -518,6 +567,7 @@
             sidebar: document.getElementById('sidebar'),
             sidebarOverlay: document.getElementById('sidebar-overlay'),
             menuToggle: document.getElementById('menu-toggle'),
+            sidebarCloseBtn: document.getElementById('sidebar-close-btn'),
             greetingText: document.getElementById('greeting-text'),
             dailyQuote: document.getElementById('daily-quote'),
             searchInput: document.getElementById('app-search'),
@@ -582,9 +632,14 @@
         function toggleSidebar() {
             const isOpen = dom.sidebar.classList.contains('open');
             dom.sidebar.classList.toggle('open', !isOpen);
+            // Only toggle overlay if on desktop or specific condition, 
+            // but for full screen mobile, overlay isn't strictly necessary 
+            // if sidebar covers everything. Keeping it for consistency.
             dom.sidebarOverlay.classList.toggle('open', !isOpen);
         }
+        
         dom.menuToggle.addEventListener('click', toggleSidebar);
+        dom.sidebarCloseBtn.addEventListener('click', toggleSidebar); // Close button logic
         dom.sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // Notifications
@@ -614,8 +669,13 @@
         // Responsive Media Query for Menu Button
         const mediaQuery = window.matchMedia('(min-width: 1024px)');
         function handleTabletChange(e) {
-            if (e.matches) dom.menuToggle.style.display = 'none';
-            else dom.menuToggle.style.display = 'block';
+            if (e.matches) {
+                dom.menuToggle.style.display = 'none';
+                dom.sidebar.classList.remove('open'); // Reset sidebar state on resize
+                dom.sidebarOverlay.classList.remove('open');
+            } else {
+                dom.menuToggle.style.display = 'block';
+            }
         }
         mediaQuery.addListener(handleTabletChange);
         handleTabletChange(mediaQuery);
