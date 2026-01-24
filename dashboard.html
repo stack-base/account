@@ -140,7 +140,11 @@
         .nav-item i { font-size: 1.25rem; opacity: 0.8; }
         .nav-item.active i { opacity: 1; }
 
-        .user-profile { padding: 1rem; border-top: 1px solid var(--border-color); background-color: var(--bg-sidebar); margin-top: auto; }
+        @media (min-width: 1024px) {
+            .user-card {border-radius: 50px;}
+        }
+
+        .user-profile { padding: 1rem; background-color: var(--bg-sidebar); margin-top: auto; }
         .user-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: var(--radius-md); transition: var(--transition); cursor: default; background-color: var(--bg-hover); border: 1px solid var(--border-color); }
         .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--bg-card); overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-weight: 600; flex-shrink: 0; border: 1px solid var(--border-color); }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -236,9 +240,8 @@
         .hero-section {
             margin: 0;
             border: none;
-            border-bottom: 1px solid var(--border-color);
             border-radius: 0;
-            padding: 8rem 0 3rem 0; 
+            padding: 9rem 0 5rem 0; 
             width: 100%;
             background: 
                 radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.06) 0%, transparent 60%),
@@ -282,10 +285,11 @@
             .hero-section {
                 margin: 0 auto;
                 margin-top: 6rem; /* Clear floating header */
-                margin-bottom: 2rem;
+                margin-bottom: 4rem;
                 border: 1px solid rgba(0,0,0,0.05);
+                box-shadow: var(--shadow-island);
                 border-radius: 32px;
-                padding: 4rem 3rem; /* Generous breathing room */
+                padding: 5rem 3rem; /* Generous breathing room */
                 width: auto;
                 max-width: 1200px;
                 background: 
@@ -397,7 +401,7 @@
             content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
             background-color: transparent; transition: var(--transition);
         }
-        .app-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); border-color: rgba(37, 99, 235, 0.3); }
+        .app-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card);}
         
         .apps-grid.edit-mode .app-card:hover { transform: none; box-shadow: var(--shadow-sm); }
 
@@ -658,7 +662,7 @@
                 </div>
 
                 <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.8rem;">
-                    <p>&copy; 2025 StackBase Ecosystem. All systems operational.</p>
+                    <p>StackBase</p>
                 </div>
 
             </div>
