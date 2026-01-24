@@ -408,17 +408,6 @@
         .app-card.swiftinvoice:hover::before { background-color: var(--color-swiftinvoice); }
         .app-card.datastudio:hover::before { background-color: var(--color-datastudio); }
 
-        .app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
-        .app-icon {
-            width: 64px; height: 64px; border-radius: 18px;
-            background-color: var(--bg-hover); display: flex; align-items: center; justify-content: center;
-            color: var(--text-main); font-size: 2rem; transition: var(--transition);
-            box-shadow: inset 0 0 0 1px var(--border-color);
-        }
-        .app-card.timetrekker .app-icon { color: var(--color-timetrekker); background-color: rgba(239, 68, 68, 0.1); }
-        .app-card.swiftinvoice .app-icon { color: var(--color-swiftinvoice); background-color: rgba(13, 148, 136, 0.1); }
-        .app-card.datastudio .app-icon { color: var(--color-datastudio); background-color: rgba(124, 58, 237, 0.1); }
-
         .app-card:hover .app-icon { color: white; box-shadow: none; }
         .app-card.timetrekker:hover .app-icon { background-color: var(--color-timetrekker); }
         .app-card.swiftinvoice:hover .app-icon { background-color: var(--color-swiftinvoice); }
@@ -542,16 +531,7 @@
         .identity-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
         .identity-email { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; word-break: break-all; }
 
-        /* Stats Row */
-        .profile-stats {
-            display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);
-        }
-        .stat-item { display: flex; flex-direction: column; align-items: center; }
-        .stat-value { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
-        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
-
-        .provider-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .provider-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
         .badge {
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.35rem 0.75rem; border-radius: 99px;
@@ -559,8 +539,23 @@
             background-color: var(--bg-hover); border: 1px solid var(--border-color);
             color: var(--text-muted);
         }
-        .badge.google { color: #DB4437; background-color: rgba(219, 68, 55, 0.08); border-color: rgba(219, 68, 55, 0.15); }
+        .badge.google { background-color: #fff; border-color: #e5e7eb; color: #374151; }
+        html.dark .badge.google { background-color: #1f2937; border-color: #374151; color: #e5e7eb; }
+
         .badge.email { color: var(--text-main); }
+
+        .btn-link-google {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-card); color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1rem; border-radius: 99px;
+            font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            margin: 0.5rem auto;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-link-google:hover { background-color: var(--bg-hover); border-color: var(--text-light); transform: translateY(-1px); }
+        .google-logo-svg { width: 16px; height: 16px; display: block; }
 
         /* Settings Card (Right Side) */
         .settings-card {
@@ -864,17 +859,6 @@
                             <h2 class="identity-name" id="display-name-big">...</h2>
                             <p class="identity-email" id="display-email-big">...</p>
                             
-                            <div class="profile-stats">
-                                <div class="stat-item">
-                                    <span class="stat-value" id="stat-apps">0</span>
-                                    <span class="stat-label">Apps</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value" id="stat-joined">-</span>
-                                    <span class="stat-label">Joined</span>
-                                </div>
-                            </div>
-
                             <div id="provider-badges" class="provider-badges">
                                 </div>
                         </div>
@@ -1003,8 +987,6 @@
             providerBadges: document.getElementById('provider-badges'),
             displayNameBig: document.getElementById('display-name-big'),
             displayEmailBig: document.getElementById('display-email-big'),
-            statApps: document.getElementById('stat-apps'),
-            statJoined: document.getElementById('stat-joined'),
 
             // Password Form
             passwordForm: document.getElementById('password-form'),
@@ -1072,15 +1054,6 @@
             dom.displayNameBig.textContent = name;
             dom.displayEmailBig.textContent = email;
             
-            // Stats
-            const appCount = document.querySelectorAll('.app-item:not(.hidden)').length;
-            dom.statApps.textContent = appCount;
-            
-            if(user.metadata.creationTime) {
-                const date = new Date(user.metadata.creationTime);
-                dom.statJoined.textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-            }
-
             // Avatar
             dom.profileAvatarDisplay.innerHTML = '';
             if (user.photoURL) {
@@ -1095,11 +1068,15 @@
             // Provider Info & Linked Accounts
             dom.providerBadges.innerHTML = '';
             const providers = user.providerData.map(p => p.providerId);
+            const isGoogleLinked = providers.includes('google.com');
+
+            // Google SVG
+            const googleSvg = `<svg class="google-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>`;
             
-            if (providers.includes('google.com')) {
+            if (isGoogleLinked) {
                 dom.providerBadges.innerHTML += `
                     <div class="badge google">
-                        <i class="ph-bold ph-google-logo"></i> Google
+                        ${googleSvg} <span style="margin-left:4px">Linked</span>
                     </div>`;
             }
             if (providers.includes('password')) {
@@ -1107,6 +1084,24 @@
                     <div class="badge email">
                         <i class="ph-bold ph-envelope-simple"></i> Email
                     </div>`;
+            }
+
+            // "Link Google Account" Button Logic
+            if (!isGoogleLinked && providers.includes('password')) {
+                const btn = document.createElement('button');
+                btn.className = 'btn-link-google';
+                btn.innerHTML = `${googleSvg} <span style="margin-left:4px">Link Google Account</span>`;
+                btn.onclick = async () => {
+                    if(confirm('To link your Google account, you need to sign in with Google. We will sign you out now so you can log in again.')) {
+                        try {
+                            await signOut(auth);
+                            window.location.href = 'https://stack-base.github.io/account/login';
+                        } catch (e) {
+                            showToast('Sign out failed', 'error');
+                        }
+                    }
+                };
+                dom.providerBadges.appendChild(btn);
             }
         }
 
