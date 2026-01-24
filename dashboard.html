@@ -530,6 +530,20 @@
         .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         .btn-primary:disabled { opacity: 0.7; cursor: wait; }
 
+        /* Provider Badges */
+        .provider-badges { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;}
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.35rem 0.75rem; border-radius: 99px;
+            font-size: 0.75rem; font-weight: 600;
+            background-color: var(--bg-hover); border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .badge.google { color: #DB4437; background-color: rgba(219, 68, 55, 0.08); border-color: rgba(219, 68, 55, 0.2); }
+        .badge.email { color: var(--text-main); }
+        
+        .divider { height: 1px; background-color: var(--border-color); margin: 2rem 0; }
+
     </style>
 </head>
 <body>
@@ -749,14 +763,17 @@
                     </div>
                     
                     <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">My Profile</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Manage your account information</p>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Manage your account information</p>
+
+                    <div id="provider-badges" class="provider-badges">
+                        </div>
 
                     <form id="profile-form">
                         <div class="form-group">
                             <label class="form-label">Email Address</label>
                             <input type="email" id="profile-email-input" class="form-input" disabled>
                             <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.4rem;">
-                                <i class="ph ph-lock-key"></i> Email cannot be changed
+                                <i class="ph ph-lock-key"></i> Email managed by provider
                             </div>
                         </div>
 
@@ -765,10 +782,29 @@
                             <input type="text" id="profile-name-input" class="form-input" placeholder="Enter your name">
                         </div>
 
-                        <button type="submit" class="btn-primary" id="save-profile-btn">
-                            Save Changes
+                        <button type="submit" class="btn-primary" id="save-profile-btn" style="width: 100%; justify-content: center;">
+                            Save Details
                         </button>
                     </form>
+                    
+                    <div class="divider"></div>
+
+                    <h3 style="text-align: left; font-size: 1rem; margin-bottom: 1rem;">Security</h3>
+                    
+                    <form id="password-form">
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="new-password" class="form-input" placeholder="Min 6 characters">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" id="confirm-password" class="form-input" placeholder="Re-enter password">
+                        </div>
+                        <button type="submit" class="btn-primary" id="save-password-btn" style="width: 100%; justify-content: center; background-color: var(--text-main);">
+                            Update Password
+                        </button>
+                    </form>
+
                 </div>
             </div>
 
@@ -777,7 +813,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
@@ -825,7 +861,14 @@
             profileEmailInput: document.getElementById('profile-email-input'),
             profileNameInput: document.getElementById('profile-name-input'),
             profileAvatarDisplay: document.getElementById('profile-avatar-display'),
-            saveProfileBtn: document.getElementById('save-profile-btn')
+            saveProfileBtn: document.getElementById('save-profile-btn'),
+            providerBadges: document.getElementById('provider-badges'),
+
+            // Password Form
+            passwordForm: document.getElementById('password-form'),
+            newPassword: document.getElementById('new-password'),
+            confirmPassword: document.getElementById('confirm-password'),
+            savePasswordBtn: document.getElementById('save-password-btn')
         };
 
         // --- VIEW SWITCHING LOGIC ---
@@ -860,6 +903,7 @@
             dom.profileEmailInput.value = user.email;
             dom.profileNameInput.value = user.displayName || '';
             
+            // Avatar
             dom.profileAvatarDisplay.innerHTML = '';
             if (user.photoURL) {
                 const img = document.createElement('img');
@@ -869,8 +913,26 @@
                 const initial = (user.displayName || user.email).charAt(0).toUpperCase();
                 dom.profileAvatarDisplay.textContent = initial;
             }
+
+            // Provider Info & Linked Accounts
+            dom.providerBadges.innerHTML = '';
+            const providers = user.providerData.map(p => p.providerId);
+            
+            if (providers.includes('google.com')) {
+                dom.providerBadges.innerHTML += `
+                    <div class="badge google">
+                        <i class="ph-bold ph-google-logo"></i> Google Linked
+                    </div>`;
+            }
+            if (providers.includes('password')) {
+                dom.providerBadges.innerHTML += `
+                    <div class="badge email">
+                        <i class="ph-bold ph-envelope-simple"></i> Email Linked
+                    </div>`;
+            }
         }
 
+        // Handle Profile Name Update
         dom.profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
@@ -883,14 +945,11 @@
                 dom.saveProfileBtn.disabled = true;
                 dom.saveProfileBtn.textContent = 'Saving...';
                 
-                await updateProfile(user, {
-                    displayName: newName
-                });
+                await updateProfile(user, { displayName: newName });
                 
-                // Update UI immediately
                 renderProfile(user);
                 updateGreeting(newName);
-                alert('Profile updated successfully!');
+                alert('Profile details updated successfully.');
                 
             } catch (error) {
                 console.error(error);
@@ -900,6 +959,47 @@
                 dom.saveProfileBtn.textContent = originalBtnText;
             }
         });
+
+        // Handle Password Update
+        dom.passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            const newPass = dom.newPassword.value;
+            const confirmPass = dom.confirmPassword.value;
+
+            if (newPass !== confirmPass) {
+                alert("Passwords do not match.");
+                return;
+            }
+            if (newPass.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            const originalBtnText = dom.savePasswordBtn.textContent;
+            try {
+                dom.savePasswordBtn.disabled = true;
+                dom.savePasswordBtn.textContent = 'Updating...';
+
+                await updatePassword(user, newPass);
+                
+                alert("Password updated successfully.");
+                dom.newPassword.value = '';
+                dom.confirmPassword.value = '';
+
+            } catch (error) {
+                console.error(error);
+                if (error.code === 'auth/requires-recent-login') {
+                    alert("For security, please sign out and sign in again before changing your password.");
+                } else {
+                    alert('Error: ' + error.message);
+                }
+            } finally {
+                dom.savePasswordBtn.disabled = false;
+                dom.savePasswordBtn.textContent = originalBtnText;
+            }
+        });
+
 
         // --- EXISTING LOGIC (Quotes, Auth, etc) ---
         // Quotes Logic
