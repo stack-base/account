@@ -34,7 +34,7 @@
             --bg-page: #ffffff;
             --bg-panel: #ffffff;
             --bg-input: #f3f4f6;
-            --text-main: #111827;
+            --text-main: #1a1a1a;
             --text-muted: #6b7280;
             --border-color: #e5e7eb;
             --border-input: transparent;
@@ -71,6 +71,10 @@
             width: 100vw;
             overflow: hidden;
             transition: background-color 0.3s ease;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         button { font-family: inherit; }
@@ -119,6 +123,7 @@
             width: 100%;
             max-width: 380px; 
             position: relative;
+            margin: 0 auto;
         }
 
         .view-wrapper {
@@ -143,7 +148,7 @@
             align-self: flex-start;
         }
         .brand-logo { width: 44px; height: 44px; }
-        .brand-name { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em;}
+        .brand-name { font-size: 1.6rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em;}
 
         .auth-title { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
         .auth-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5; }
@@ -181,6 +186,10 @@
             font-size: 0.95rem;
             transition: var(--transition);
             z-index: 1;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
 
         input:focus {
@@ -315,16 +324,17 @@
         @media (min-width: 769px) {
             .hero-section { display: flex; }
             .theme-fab { top: 40px; right: 40px; }
-            .layout-container { grid-template-columns: 1.5fr 1fr; } 
+            .layout-container { grid-template-columns: 1fr 1fr; } 
             .auth-section { padding: 4rem; }
         }
 
         @media (min-width: 1200px) {
-            .layout-container { grid-template-columns: 65fr 35fr; }
+            .layout-container { grid-template-columns: 1fr 480px; }
         }
 
         @media (min-width: 1600px) {
-            .layout-container { grid-template-columns: 70fr 30fr; }
+            .layout-container { grid-template-columns: 1fr 560px; }
+            .auth-container { max-width: 420px; }
         }
     </style>
 </head>
@@ -356,7 +366,7 @@
 
                 <div id="auth-main-view" class="view-wrapper">
                     <h1 class="auth-title" id="page-title">Sign In</h1>
-                    <p class="auth-subtitle" id="page-subtitle">Welcome back! Please enter your details.</p>
+                    <p class="auth-subtitle" id="page-subtitle">Welcome back!</p>
 
                     <form id="login-form">
                         <div class="input-group">
@@ -468,7 +478,6 @@
                 </div>
             </div>
             
-            <p class="version-tag">StackBase SSO v1.0.2</p>
         </div>
     </div>
 
@@ -487,6 +496,8 @@
             sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
             authDomain: "timetrekker-app.firebaseapp.com",
