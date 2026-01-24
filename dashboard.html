@@ -462,6 +462,74 @@
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- PROFILE VIEW --- */
+        .profile-view {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .profile-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-card);
+            text-align: center;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            border: 4px solid var(--bg-page);
+            box-shadow: var(--shadow-island);
+            background-color: var(--bg-hover);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-muted);
+        }
+
+        .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .form-input { 
+            width: 100%; 
+            padding: 0.75rem 1rem; 
+            border-radius: var(--radius-md); 
+            border: 1px solid var(--border-color); 
+            background-color: var(--bg-page); 
+            color: var(--text-main); 
+            font-size: 1rem; 
+            transition: var(--transition); 
+        }
+
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-input:disabled { opacity: 0.7; cursor: not-allowed; background-color: var(--bg-hover); color: var(--text-muted); }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.7; cursor: wait; }
+
     </style>
 </head>
 <body>
@@ -499,7 +567,7 @@
 
             <nav class="nav-links">
                 <div class="nav-section-label">Platform</div>
-                <a href="#" class="nav-item active">
+                <a href="#" class="nav-item active" id="nav-dashboard">
                     <i class="ph ph-squares-four"></i>
                     Dashboard
                 </a>
@@ -508,6 +576,12 @@
                     Analytics
                 </a>
                 
+                <div class="nav-section-label">Account</div>
+                <a href="#" class="nav-item" id="nav-profile">
+                    <i class="ph ph-user-circle"></i>
+                    Profile
+                </a>
+
                 <div class="nav-section-label">Support</div>
                 <a href="#" class="nav-item" onclick="alert('Help Center coming soon')">
                     <i class="ph ph-life-buoy"></i>
@@ -564,113 +638,146 @@
 
         <div class="content-scroll">
             
-            <div class="hero-section">
-                <div class="hero-content-wrapper">
-                    <h1 class="welcome-title" id="greeting-text">Welcome back</h1>
-                    <div class="quote-box" id="daily-quote">
-                        <i class="ph-fill ph-quotes"></i>
-                        <span>Loading inspiration...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="apps-container">
-                <div class="section-header">
-                    <h2 class="section-title">My Apps</h2>
-                    <button id="edit-apps-btn" class="btn-edit">Edit</button>
-                </div>
-
-                <div class="apps-grid fade-in" id="apps-grid" style="animation-delay: 0.2s;">
-                    <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item timetrekker" data-name="timetrekker productivity time" data-id="timetrekker">
-                        <div class="remove-badge">
-                            <i class="ph-bold ph-x"></i>
-                        </div>
-                        <div class="app-header">
-                            <div class="app-icon">
-                                <i class="ph-fill ph-mountains"></i>
-                            </div>
-                            <span class="app-badge">Installed</span>
-                        </div>
-                        <div class="app-name">TimeTrekker</div>
-                        <p class="app-desc">Production-grade focus timer and task manager. Track pomodoros, manage projects, and analyze productivity.</p>
-                        <div class="app-footer">
-                            <div class="btn-launch">
-                                <span>Launch</span>
-                                <i class="ph-bold ph-arrow-right"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://stack-base.github.io/swiftinvoice/application" class="app-card app-item swiftinvoice" data-name="swiftinvoice invoice pdf finance" data-id="swiftinvoice">
-                        <div class="remove-badge">
-                            <i class="ph-bold ph-x"></i>
-                        </div>
-                        <div class="app-header">
-                            <div class="app-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32" height="32">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
-                            </div>
-                            <span class="app-badge">Installed</span>
-                        </div>
-                        <div class="app-name">SwiftInvoice</div>
-                        <p class="app-desc">Create professional invoices instantly. Manage clients, generate PDF reports, and track your billing history.</p>
-                        <div class="app-footer">
-                            <div class="btn-launch">
-                                <span>Launch</span>
-                                <i class="ph-bold ph-arrow-right"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://stack-base.github.io/swiftinvoice/studio" class="app-card app-item datastudio" data-name="datastudio analytics finance chart" data-id="datastudio">
-                        <div class="remove-badge">
-                            <i class="ph-bold ph-x"></i>
-                        </div>
-                        <div class="app-header">
-                            <div class="app-icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-                                    <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/>
-                                </svg>
-                            </div>
-                            <span class="app-badge">Installed</span>
-                        </div>
-                        <div class="app-name">Data Studio</div>
-                        <p class="app-desc">Visual analytics for your invoice data. Track revenue trends, top clients, and financial performance.</p>
-                        <div class="app-footer">
-                            <div class="btn-launch">
-                                <span>Launch</span>
-                                <i class="ph-bold ph-arrow-right"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <div class="app-card" style="border-style: dashed; opacity: 0.7; cursor: default;">
-                        <div class="app-header">
-                            <div class="app-icon" style="background-color: var(--bg-hover);">
-                                <i class="ph ph-plus"></i>
-                            </div>
-                        </div>
-                        <div class="app-name">Add Module</div>
-                        <p class="app-desc">Visit the StackBase marketplace to discover new tools for your workflow.</p>
-                        <div class="app-footer" style="justify-content: space-between;">
-                            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Coming Soon</span>
-                            <button id="reset-apps-view" style="border:none; background:none; font-size: 0.75rem; color: var(--text-light); cursor: pointer; text-decoration: underline;">Reset View</button>
+            <div id="dashboard-view">
+                <div class="hero-section">
+                    <div class="hero-content-wrapper">
+                        <h1 class="welcome-title" id="greeting-text">Welcome back</h1>
+                        <div class="quote-box" id="daily-quote">
+                            <i class="ph-fill ph-quotes"></i>
+                            <span>Loading inspiration...</span>
                         </div>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.8rem;">
-                    <p>StackBase</p>
-                </div>
+                <div class="apps-container">
+                    <div class="section-header">
+                        <h2 class="section-title">My Apps</h2>
+                        <button id="edit-apps-btn" class="btn-edit">Edit</button>
+                    </div>
 
+                    <div class="apps-grid fade-in" id="apps-grid" style="animation-delay: 0.2s;">
+                        <a href="https://stack-base.github.io/timetrekker/application" class="app-card app-item timetrekker" data-name="timetrekker productivity time" data-id="timetrekker">
+                            <div class="remove-badge">
+                                <i class="ph-bold ph-x"></i>
+                            </div>
+                            <div class="app-header">
+                                <div class="app-icon">
+                                    <i class="ph-fill ph-mountains"></i>
+                                </div>
+                                <span class="app-badge">Installed</span>
+                            </div>
+                            <div class="app-name">TimeTrekker</div>
+                            <p class="app-desc">Production-grade focus timer and task manager. Track pomodoros, manage projects, and analyze productivity.</p>
+                            <div class="app-footer">
+                                <div class="btn-launch">
+                                    <span>Launch</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="https://stack-base.github.io/swiftinvoice/application" class="app-card app-item swiftinvoice" data-name="swiftinvoice invoice pdf finance" data-id="swiftinvoice">
+                            <div class="remove-badge">
+                                <i class="ph-bold ph-x"></i>
+                            </div>
+                            <div class="app-header">
+                                <div class="app-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32" height="32">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                    </svg>
+                                </div>
+                                <span class="app-badge">Installed</span>
+                            </div>
+                            <div class="app-name">SwiftInvoice</div>
+                            <p class="app-desc">Create professional invoices instantly. Manage clients, generate PDF reports, and track your billing history.</p>
+                            <div class="app-footer">
+                                <div class="btn-launch">
+                                    <span>Launch</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="https://stack-base.github.io/swiftinvoice/studio" class="app-card app-item datastudio" data-name="datastudio analytics finance chart" data-id="datastudio">
+                            <div class="remove-badge">
+                                <i class="ph-bold ph-x"></i>
+                            </div>
+                            <div class="app-header">
+                                <div class="app-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+                                        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <span class="app-badge">Installed</span>
+                            </div>
+                            <div class="app-name">Data Studio</div>
+                            <p class="app-desc">Visual analytics for your invoice data. Track revenue trends, top clients, and financial performance.</p>
+                            <div class="app-footer">
+                                <div class="btn-launch">
+                                    <span>Launch</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </div>
+                            </div>
+                        </a>
+
+                        <div class="app-card" style="border-style: dashed; opacity: 0.7; cursor: default;">
+                            <div class="app-header">
+                                <div class="app-icon" style="background-color: var(--bg-hover);">
+                                    <i class="ph ph-plus"></i>
+                                </div>
+                            </div>
+                            <div class="app-name">Add Module</div>
+                            <p class="app-desc">Visit the StackBase marketplace to discover new tools for your workflow.</p>
+                            <div class="app-footer" style="justify-content: space-between;">
+                                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Coming Soon</span>
+                                <button id="reset-apps-view" style="border:none; background:none; font-size: 0.75rem; color: var(--text-light); cursor: pointer; text-decoration: underline;">Reset View</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.8rem;">
+                        <p>StackBase</p>
+                    </div>
+
+                </div>
             </div>
+
+            <div id="profile-view" class="profile-view hidden">
+                <div class="profile-card">
+                    <div class="profile-avatar-large" id="profile-avatar-display">
+                        <i class="ph ph-user"></i>
+                    </div>
+                    
+                    <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">My Profile</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Manage your account information</p>
+
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="profile-email-input" class="form-input" disabled>
+                            <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.4rem;">
+                                <i class="ph ph-lock-key"></i> Email cannot be changed
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="profile-name-input" class="form-input" placeholder="Enter your name">
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="save-profile-btn">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
@@ -705,9 +812,96 @@
             notifPanel: document.getElementById('notif-panel'),
             editBtn: document.getElementById('edit-apps-btn'),
             appsGrid: document.getElementById('apps-grid'),
-            resetViewBtn: document.getElementById('reset-apps-view')
+            resetViewBtn: document.getElementById('reset-apps-view'),
+            
+            // Navigation & Views
+            navDashboard: document.getElementById('nav-dashboard'),
+            navProfile: document.getElementById('nav-profile'),
+            viewDashboard: document.getElementById('dashboard-view'),
+            viewProfile: document.getElementById('profile-view'),
+            
+            // Profile Form
+            profileForm: document.getElementById('profile-form'),
+            profileEmailInput: document.getElementById('profile-email-input'),
+            profileNameInput: document.getElementById('profile-name-input'),
+            profileAvatarDisplay: document.getElementById('profile-avatar-display'),
+            saveProfileBtn: document.getElementById('save-profile-btn')
         };
 
+        // --- VIEW SWITCHING LOGIC ---
+        function switchView(viewName) {
+            // Toggle Nav State
+            dom.navDashboard.classList.toggle('active', viewName === 'dashboard');
+            dom.navProfile.classList.toggle('active', viewName === 'profile');
+            
+            // Toggle View Visibility
+            if(viewName === 'dashboard') {
+                dom.viewDashboard.classList.remove('hidden');
+                dom.viewProfile.classList.add('hidden');
+            } else {
+                dom.viewDashboard.classList.add('hidden');
+                dom.viewProfile.classList.remove('hidden');
+                // Populate form when opening profile
+                if(auth.currentUser) populateProfileForm(auth.currentUser);
+            }
+            
+            // Close sidebar on mobile after selection
+            if(window.innerWidth < 1024) {
+                dom.sidebar.classList.remove('open');
+                dom.sidebarOverlay.classList.remove('open');
+            }
+        }
+
+        dom.navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('dashboard'); });
+        dom.navProfile.addEventListener('click', (e) => { e.preventDefault(); switchView('profile'); });
+
+        // --- PROFILE FORM LOGIC ---
+        function populateProfileForm(user) {
+            dom.profileEmailInput.value = user.email;
+            dom.profileNameInput.value = user.displayName || '';
+            
+            dom.profileAvatarDisplay.innerHTML = '';
+            if (user.photoURL) {
+                const img = document.createElement('img');
+                img.src = user.photoURL;
+                dom.profileAvatarDisplay.appendChild(img);
+            } else {
+                const initial = (user.displayName || user.email).charAt(0).toUpperCase();
+                dom.profileAvatarDisplay.textContent = initial;
+            }
+        }
+
+        dom.profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if(!user) return;
+
+            const newName = dom.profileNameInput.value.trim();
+            const originalBtnText = dom.saveProfileBtn.textContent;
+            
+            try {
+                dom.saveProfileBtn.disabled = true;
+                dom.saveProfileBtn.textContent = 'Saving...';
+                
+                await updateProfile(user, {
+                    displayName: newName
+                });
+                
+                // Update UI immediately
+                renderProfile(user);
+                updateGreeting(newName);
+                alert('Profile updated successfully!');
+                
+            } catch (error) {
+                console.error(error);
+                alert('Error updating profile: ' + error.message);
+            } finally {
+                dom.saveProfileBtn.disabled = false;
+                dom.saveProfileBtn.textContent = originalBtnText;
+            }
+        });
+
+        // --- EXISTING LOGIC (Quotes, Auth, etc) ---
         // Quotes Logic
         const quotes = [
             "Focus on being productive instead of busy.",
