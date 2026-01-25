@@ -126,11 +126,8 @@
         .nav-item.active { background-color: var(--bg-active); color: var(--primary); }
         .nav-item i { font-size: 1.25rem; opacity: 0.8; }
         .nav-item.active i { opacity: 1; }
-        @media (max-width: 768px) {
-            .user-card { border-radius: 50px; }
-        }
         .user-profile { padding: 1rem; background-color: var(--bg-sidebar); margin-top: auto; }
-        .user-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: var(--radius-md); transition: var(--transition); cursor: default; background-color: var(--bg-hover); border: 1px solid var(--border-color); }
+        .user-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 50px; transition: var(--transition); cursor: default; background-color: var(--bg-hover); border: 1px solid var(--border-color); }
         .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--bg-card); overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-weight: 600; flex-shrink: 0; border: 1px solid var(--border-color); }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-info { overflow: hidden; flex: 1; }
@@ -670,7 +667,7 @@
                 <div class="nav-section-label">Account</div>
                 <a href="#" class="nav-item" id="nav-profile">
                     <i class="ph ph-user-circle"></i>
-                    Profile
+                    Account Center
                 </a>
                 <div class="nav-section-label">Support</div>
                 <a href="#" class="nav-item" id="nav-help">
@@ -909,7 +906,7 @@
                             </button>
                         </form>
                         
-                        <div class="divider-text" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Danger Zone</div>
+                        <div class="divider-text" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Data & privacy</div>
                         <div class="settings-header" style="border:none; margin-bottom: 0.5rem; padding-bottom: 0;">
                             <i class="ph-bold ph-warning-circle settings-icon" style="color: #ef4444;"></i>
                             <span class="settings-title" style="color: #ef4444;">Delete Account</span>
@@ -926,7 +923,7 @@
 
             <div id="help-view" class="help-view hidden fade-in">
                 <div class="help-hero">
-                    <h1 class="help-title">How can we help?</h1>
+                    <h1 class="help-title">How can we help you?</h1>
                     <p class="help-subtitle">Search our knowledge base or get in touch with our support team for assistance.</p>
                     <div class="faq-search-wrapper">
                         <i class="ph ph-magnifying-glass faq-search-icon"></i>
@@ -1040,7 +1037,7 @@
                                 Manage your password, linked accounts, and personal details in your profile.
                             </p>
                         </div>
-                        <a href="https://stack-base.github.io/account/dashboard.html?view=profile" class="btn-primary" style="width: auto; background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none;">
+                        <a href="https://stack-base.github.io/account/dashboard.html?view=profile" class="btn-primary" style="width: auto; background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; text-decoration: none;">
                             <i class="ph ph-user-gear"></i>
                             <span>Manage Account</span>
                         </a>
