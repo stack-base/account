@@ -908,7 +908,19 @@
                                 Update Password
                             </button>
                         </form>
-                    </div>
+                        
+                        <div class="divider-text" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Danger Zone</div>
+                        <div class="settings-header" style="border:none; margin-bottom: 0.5rem; padding-bottom: 0;">
+                            <i class="ph-bold ph-warning-circle settings-icon" style="color: #ef4444;"></i>
+                            <span class="settings-title" style="color: #ef4444;">Delete Account</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                            Permanently delete your account and all associated data. This action cannot be undone.
+                        </p>
+                        <button type="button" id="delete-account-btn" class="btn-primary" style="background-color: #fee2e2; color: #ef4444; border: 1px solid #fecaca; box-shadow: none; transition: all 0.2s;">
+                            Delete Account
+                        </button>
+                        </div>
                 </div>
             </div>
 
@@ -1040,7 +1052,7 @@
     </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
             authDomain: "timetrekker-app.firebaseapp.com",
@@ -1107,6 +1119,7 @@
             newPassword: document.getElementById('new-password'),
             confirmPassword: document.getElementById('confirm-password'),
             savePasswordBtn: document.getElementById('save-password-btn'),
+            deleteAccountBtn: document.getElementById('delete-account-btn'),
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toast-message')
         };
@@ -1309,6 +1322,42 @@
                 dom.savePasswordBtn.textContent = originalBtnText;
             }
         });
+
+        // Delete Account Logic
+        if (dom.deleteAccountBtn) {
+            dom.deleteAccountBtn.addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                    return;
+                }
+
+                if (!confirm("All your data will be permanently lost. Are you absolutely sure?")) {
+                    return;
+                }
+
+                const originalText = dom.deleteAccountBtn.textContent;
+                dom.deleteAccountBtn.textContent = 'Deleting...';
+                dom.deleteAccountBtn.disabled = true;
+
+                try {
+                    await deleteUser(user);
+                    alert('Your account has been deleted.');
+                    window.location.replace('https://stack-base.github.io/account/login.html');
+                } catch (error) {
+                    console.error(error);
+                    if (error.code === 'auth/requires-recent-login') {
+                        showToast('Security: Please sign out and sign in again to delete account.', 'error');
+                    } else {
+                        showToast(error.message, 'error');
+                    }
+                    dom.deleteAccountBtn.textContent = originalText;
+                    dom.deleteAccountBtn.disabled = false;
+                }
+            });
+        }
+
         const quotes = [
             "Focus on being productive instead of busy.",
             "The secret of getting ahead is getting started.",
