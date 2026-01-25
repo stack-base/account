@@ -321,6 +321,57 @@
 
         .version-tag { position: absolute; bottom: 20px; right: 30px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
+        /* Link Account Banner Styles */
+        .link-banner {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            animation: fadeIn 0.4s ease-out;
+            position: relative;
+        }
+        html.dark .link-banner {
+            background-color: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+        .link-banner.hidden { display: none; }
+        .link-banner-icon {
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .link-banner-content { flex: 1; }
+        .link-banner-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+        .link-banner-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .link-banner-text strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        #close-banner-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0.7;
+        }
+        #close-banner-btn:hover { opacity: 1; color: var(--text-main); }
+
         @media (min-width: 769px) {
             .hero-section { display: flex; }
             .theme-fab { top: 40px; right: 40px; }
@@ -359,6 +410,23 @@
             </button>
 
             <div class="auth-container">
+                <div id="link-account-banner" class="link-banner hidden">
+                    <div class="link-banner-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M19.902 4.098a3.75 3.75 0 00-5.304 0l-4.5 4.5a3.75 3.75 0 001.035 6.037.75.75 0 01-.646 1.353 5.25 5.25 0 01-1.449-8.45l4.5-4.5a5.25 5.25 0 117.424 7.424l-1.757 1.757a.75.75 0 11-1.06-1.06l1.757-1.757a3.75 3.75 0 105.304 5.304l4.5-4.5a3.75 3.75 0 00-1.035-6.037.75.75 0 01-.354-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="link-banner-content">
+                        <div class="link-banner-title">Link your Account</div>
+                        <div class="link-banner-text">
+                            Please sign in with Google for <strong id="link-target-email">...</strong> to connect your accounts.
+                        </div>
+                    </div>
+                    <button id="close-banner-btn" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
                 <a href="https://stack-base.github.io/home" class="brand-header">
                     <img src="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" alt="Logo" class="brand-logo">
                     <span class="brand-name">StackBase</span>
@@ -550,7 +618,12 @@
             forgotLink: document.getElementById('forgot-password-link'),
             themeToggle: document.getElementById('themeToggle'),
             iconSun: document.getElementById('icon-sun'),
-            iconMoon: document.getElementById('icon-moon')
+            iconMoon: document.getElementById('icon-moon'),
+
+            // NEW BANNER ELEMENTS
+            linkBanner: document.getElementById('link-account-banner'),
+            linkTargetEmail: document.getElementById('link-target-email'),
+            closeBannerBtn: document.getElementById('close-banner-btn')
         };
 
         let isRegisterMode = false;
@@ -561,6 +634,38 @@
             return (redirectUrl && redirectUrl.startsWith('http')) ? redirectUrl : 'https://stack-base.github.io/account/dashboard';
         }
         const mainAppUrl = getRedirectUrl();
+
+        // --- NEW LINKING CHECK FUNCTION ---
+        function checkLinkingFlow() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const flow = urlParams.get('flow');
+            const linkEmail = urlParams.get('link_email');
+
+            if (flow === 'link' && linkEmail) {
+                // Show the banner
+                dom.linkBanner.classList.remove('hidden');
+                dom.linkTargetEmail.textContent = linkEmail;
+                
+                // Optional: Pre-fill email input if you want
+                if(dom.emailInput) dom.emailInput.value = linkEmail;
+                
+                // Optional: Update page title to reflect context
+                dom.pageTitle.textContent = "Link Google Account";
+                dom.pageSubtitle.textContent = "Connect your Google profile to continue.";
+            }
+        }
+        
+        // Initialize the check
+        checkLinkingFlow();
+
+        // Banner Close Logic
+        dom.closeBannerBtn.addEventListener('click', () => {
+            dom.linkBanner.classList.add('hidden');
+            // Reset titles if user dismisses
+            dom.pageTitle.textContent = "Sign In"; 
+            dom.pageSubtitle.textContent = "Welcome back! Please enter your details.";
+        });
+        // ----------------------------------
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
