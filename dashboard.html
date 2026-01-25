@@ -548,7 +548,7 @@
         /* --- Help Center Styles --- */
         .help-hero {
             text-align: center;
-            padding: 9rem 1.5rem 5rem; /* Increased padding from 1rem to 1.5rem */
+            padding: 9rem 1.5rem 5rem;
             background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
         }
         .help-title { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
@@ -568,7 +568,6 @@
         .help-grid {
             display: grid; grid-template-columns: 1fr; gap: 2rem;
             max-width: 1000px; margin: 0 auto; padding-bottom: 4rem;
-            /* Added padding for mobile edge protection */
             padding-left: 1.5rem;
             padding-right: 1.5rem;
         }
@@ -660,21 +659,21 @@
             </div>
             <nav class="nav-links">
                 <div class="nav-section-label">Platform</div>
-                <a href="#" class="nav-item active" id="nav-dashboard">
+                <a href="?view=dashboard" class="nav-item active" id="nav-dashboard">
                     <i class="ph ph-squares-four"></i>
                     Dashboard
                 </a>
                 <div class="nav-section-label">Account</div>
-                <a href="#" class="nav-item" id="nav-profile">
+                <a href="?view=profile" class="nav-item" id="nav-profile">
                     <i class="ph ph-user-circle"></i>
                     Account Center
                 </a>
                 <div class="nav-section-label">Support</div>
-                <a href="#" class="nav-item" id="nav-help">
+                <a href="?view=help" class="nav-item" id="nav-help">
                     <i class="ph ph-lifebuoy"></i>
                     Help Center
                 </a>
-                <a href="#" class="nav-item" id="nav-settings">
+                <a href="?view=settings" class="nav-item" id="nav-settings">
                     <i class="ph ph-gear"></i>
                     Settings
                 </a>
@@ -1037,7 +1036,7 @@
                                 Manage your password, linked accounts, and personal details in your profile.
                             </p>
                         </div>
-                        <a href="https://stack-base.github.io/account/dashboard.html?view=profile" class="btn-primary" style="width: auto; background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; text-decoration: none;">
+                        <a href="?view=profile" class="btn-primary" style="width: auto; background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; text-decoration: none;">
                             <i class="ph ph-user-gear"></i>
                             <span style="padding: 0rem 1rem;">Manage Account</span>
                         </a>
@@ -1061,6 +1060,7 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
         const dom = {
             userName: document.getElementById('user-name'),
             userEmail: document.getElementById('user-email'),
@@ -1081,12 +1081,6 @@
             editBtn: document.getElementById('edit-apps-btn'),
             appsGrid: document.getElementById('apps-grid'),
             resetViewBtn: document.getElementById('reset-apps-view'),
-            
-            // Nav Items
-            navDashboard: document.getElementById('nav-dashboard'),
-            navProfile: document.getElementById('nav-profile'),
-            navHelp: document.getElementById('nav-help'),
-            navSettings: document.getElementById('nav-settings'),
             
             // Views
             viewDashboard: document.getElementById('dashboard-view'),
@@ -1120,6 +1114,61 @@
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toast-message')
         };
+
+        // --- Routing Logic ---
+        function handleRouting() {
+            const params = new URLSearchParams(window.location.search);
+            const viewName = params.get('view') || 'dashboard'; 
+
+            // Update Sidebar UI
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const activeLink = document.querySelector(`.nav-item[href="?view=${viewName}"]`);
+            if (activeLink) activeLink.classList.add('active');
+
+            // Hide all views
+            dom.viewDashboard.classList.add('hidden');
+            dom.viewProfile.classList.add('hidden');
+            dom.viewHelp.classList.add('hidden');
+            dom.viewSettings.classList.add('hidden');
+
+            // Show selected view
+            if (viewName === 'dashboard') {
+                dom.viewDashboard.classList.remove('hidden');
+            } else if (viewName === 'profile') {
+                dom.viewProfile.classList.remove('hidden');
+                if(auth.currentUser) populateProfileForm(auth.currentUser);
+            } else if (viewName === 'help') {
+                dom.viewHelp.classList.remove('hidden');
+            } else if (viewName === 'settings') {
+                dom.viewSettings.classList.remove('hidden');
+                updateSettingsThemeButton();
+            }
+
+            // Mobile Sidebar Handling
+            if(window.innerWidth < 1024) {
+                dom.sidebar.classList.remove('open');
+                dom.sidebarOverlay.classList.remove('open');
+            }
+        }
+
+        // Global Link Interceptor for SPA feel
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.href.includes('?view=')) {
+                e.preventDefault();
+                const url = new URL(link.href);
+                window.history.pushState({}, '', url);
+                handleRouting();
+            }
+        });
+
+        // Handle Browser Back/Forward
+        window.addEventListener('popstate', handleRouting);
+        // Initialize Routing
+        handleRouting();
+        // --- End Routing Logic ---
+
+
         function showToast(message, type = 'success') {
             dom.toastMessage.textContent = message;
             dom.toast.className = `toast ${type}`;
@@ -1134,39 +1183,7 @@
                 dom.toast.classList.remove('show');
             }, 3000);
         }
-        function switchView(viewName) {
-            dom.navDashboard.classList.toggle('active', viewName === 'dashboard');
-            dom.navProfile.classList.toggle('active', viewName === 'profile');
-            dom.navHelp.classList.toggle('active', viewName === 'help');
-            dom.navSettings.classList.toggle('active', viewName === 'settings');
-            
-            dom.viewDashboard.classList.add('hidden');
-            dom.viewProfile.classList.add('hidden');
-            dom.viewHelp.classList.add('hidden');
-            dom.viewSettings.classList.add('hidden');
-
-            if(viewName === 'dashboard') {
-                dom.viewDashboard.classList.remove('hidden');
-            } else if (viewName === 'profile') {
-                dom.viewProfile.classList.remove('hidden');
-                if(auth.currentUser) populateProfileForm(auth.currentUser);
-            } else if (viewName === 'help') {
-                dom.viewHelp.classList.remove('hidden');
-            } else if (viewName === 'settings') {
-                dom.viewSettings.classList.remove('hidden');
-                updateSettingsThemeButton();
-            }
-
-            if(window.innerWidth < 1024) {
-                dom.sidebar.classList.remove('open');
-                dom.sidebarOverlay.classList.remove('open');
-            }
-        }
-        dom.navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('dashboard'); });
-        dom.navProfile.addEventListener('click', (e) => { e.preventDefault(); switchView('profile'); });
-        dom.navHelp.addEventListener('click', (e) => { e.preventDefault(); switchView('help'); });
-        dom.navSettings.addEventListener('click', (e) => { e.preventDefault(); switchView('settings'); });
-
+        
         // FAQ & Help Logic
         document.querySelectorAll('.faq-question').forEach(button => {
             button.addEventListener('click', () => {
@@ -1537,22 +1554,6 @@
         }
         
         updateThemeIcon(document.documentElement.classList.contains('dark'));
-        
-        // Handle URL routing on initial load
-        function handleInitialRoute() {
-            const url = window.location.href.toLowerCase();
-            // Checks for query params or simple string matches
-            if (url.includes('view=profile') || url.includes('section=profile') || url.includes('=profile')) {
-                switchView('profile');
-            } else if (url.includes('view=help') || url.includes('section=help') || url.includes('=help') || url.includes('helpcenter')) {
-                switchView('help');
-            } else if (url.includes('view=settings') || url.includes('section=settings')) {
-                switchView('settings');
-            } else {
-                switchView('dashboard');
-            }
-        }
-        handleInitialRoute();
     </script>
 </body>
 </html>
