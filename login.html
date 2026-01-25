@@ -321,7 +321,7 @@
 
         .version-tag { position: absolute; bottom: 20px; right: 30px; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
-        /* --- IMPROVED LINK ACCOUNT BANNER --- */
+        /* --- LINK ACCOUNT BANNER --- */
         .link-banner {
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
@@ -334,13 +334,13 @@
             gap: 1rem;
             animation: slideDownFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
-            box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.08); /* Subtle colored shadow */
+            box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.08); 
         }
         .link-banner.hidden { display: none; }
         
         .link-banner-icon {
             color: var(--primary);
-            background-color: rgba(37, 99, 235, 0.1); /* Soft circle background */
+            background-color: rgba(37, 99, 235, 0.1); 
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -642,10 +642,14 @@
             iconSun: document.getElementById('icon-sun'),
             iconMoon: document.getElementById('icon-moon'),
 
-            // BANNER ELEMENTS
+            // BANNER & ELEMENTS TO HIDE
             linkBanner: document.getElementById('link-account-banner'),
             linkTargetEmail: document.getElementById('link-target-email'),
-            closeBannerBtn: document.getElementById('close-banner-btn')
+            closeBannerBtn: document.getElementById('close-banner-btn'),
+            
+            // Elements to hide during linking
+            separator: document.querySelector('.separator'),
+            toggleMode: document.querySelector('.toggle-mode')
         };
 
         let isRegisterMode = false;
@@ -657,32 +661,46 @@
         }
         const mainAppUrl = getRedirectUrl();
 
-        // --- CHECK LINKING FLOW ---
+        // --- UPDATED CHECK LINKING FLOW ---
         function checkLinkingFlow() {
             const urlParams = new URLSearchParams(window.location.search);
             const flow = urlParams.get('flow');
             const linkEmail = urlParams.get('link_email');
 
             if (flow === 'link' && linkEmail) {
+                // Show Banner
                 dom.linkBanner.classList.remove('hidden');
-                // Standardizing the email display slightly
                 dom.linkTargetEmail.textContent = linkEmail;
                 
+                // HIDE standard Auth Elements
+                dom.loginForm.style.display = 'none';
+                if(dom.separator) dom.separator.style.display = 'none';
+                if(dom.toggleMode) dom.toggleMode.style.display = 'none';
+
+                // Optional: Pre-fill email just in case needed internally
                 if(dom.emailInput) dom.emailInput.value = linkEmail;
                 
-                // Update text to guide user
+                // Update Text
                 dom.pageTitle.textContent = "Link Google Account";
                 dom.pageSubtitle.textContent = "Sign in to connect your profiles.";
             }
         }
         checkLinkingFlow();
 
+        // Updated Close Logic to Restore View
         dom.closeBannerBtn.addEventListener('click', () => {
             dom.linkBanner.classList.add('hidden');
+            
+            // Restore Elements
+            dom.loginForm.style.display = 'block';
+            if(dom.separator) dom.separator.style.display = 'flex';
+            if(dom.toggleMode) dom.toggleMode.style.display = 'block';
+            
+            // Restore Text
             dom.pageTitle.textContent = "Sign In"; 
             dom.pageSubtitle.textContent = "Welcome back! Please enter your details.";
         });
-        // --------------------------
+        // ----------------------------------
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
