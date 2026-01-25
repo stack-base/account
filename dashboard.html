@@ -1385,6 +1385,20 @@
             document.getElementById('theme-color-meta').setAttribute('content', isDark ? '#000000' : '#ffffff');
         }
         updateThemeIcon(document.documentElement.classList.contains('dark'));
+        
+        // Handle URL routing on initial load
+        function handleInitialRoute() {
+            const url = window.location.href.toLowerCase();
+            // Checks for query params or simple string matches
+            if (url.includes('view=profile') || url.includes('section=profile') || url.includes('=profile')) {
+                switchView('profile');
+            } else if (url.includes('view=help') || url.includes('section=help') || url.includes('=help') || url.includes('helpcenter')) {
+                switchView('help');
+            } else {
+                switchView('dashboard');
+            }
+        }
+        handleInitialRoute();
     </script>
 </body>
 </html>
