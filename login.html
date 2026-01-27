@@ -20,6 +20,8 @@
         base-uri 'self';
     ">
 
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff" id="theme-color-meta">
     <title>StackBase | Sign In</title>
@@ -801,6 +803,24 @@
         setupToggle(dom.toggleNewPass, dom.newPasswordInput);
         setupToggle(dom.toggleConfirmNewPass, dom.confirmNewPasswordInput);
 
+        // SECURITY UPDATE: Rate Limiting Helper
+        function triggerRateLimit(btn, originalText) {
+             const originalColor = btn.style.backgroundColor;
+             btn.disabled = true;
+             btn.style.opacity = '0.5';
+             btn.style.cursor = 'not-allowed';
+             
+             // Wait 3 seconds before allowing another attempt
+             setTimeout(() => {
+                 btn.disabled = false;
+                 btn.style.opacity = '1';
+                 btn.style.cursor = 'pointer';
+                 if (btn.querySelector('.spinner')) {
+                     setLoading(btn, false, originalText);
+                 }
+             }, 3000);
+        }
+
         dom.loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = dom.emailInput.value;
@@ -822,7 +842,8 @@
                     await signInWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                setLoading(dom.submitBtn, false, isRegisterMode ? 'Sign Up' : 'Sign In');
+                // SECURITY: Apply rate limiting on error to prevent spam
+                triggerRateLimit(dom.submitBtn, isRegisterMode ? 'Sign Up' : 'Sign In');
                 handleAuthError(error);
             }
         });
@@ -837,9 +858,12 @@
                 showToast('Reset link sent to your email!', 'success');
                 setTimeout(() => switchView('login'), 2000);
             } catch (error) {
+                // SECURITY: Rate limit reset requests too
+                triggerRateLimit(dom.sendResetBtn, 'Send Reset Link');
                 handleAuthError(error);
             } finally {
-                setLoading(dom.sendResetBtn, false, 'Send Reset Link');
+                // Normally handled in rate limit, but if successful we want to clear loading
+                if (!dom.sendResetBtn.disabled) setLoading(dom.sendResetBtn, false, 'Send Reset Link');
             }
         });
 
