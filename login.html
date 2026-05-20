@@ -1045,7 +1045,7 @@
         }
         const mainAppUrl = getRedirectUrl();
 
-        function checkLinkingFlow() {
+        function checkInitialFlows() {
             const urlParams = new URLSearchParams(window.location.search);
             const flow = urlParams.get('flow');
             const linkEmail = urlParams.get('link_email');
@@ -1059,9 +1059,16 @@
                 if(dom.emailInput) dom.emailInput.value = linkEmail;
                 dom.pageTitle.textContent = "Link Google Account";
                 dom.pageSubtitle.textContent = "Sign in to connect your profiles.";
+            } else if (flow === 'editprofile') {
+                // Dynamically update the Login view headings BEFORE authentication
+                dom.pageTitle.textContent = "Verify Identity";
+                dom.pageSubtitle.textContent = "Please sign in securely to edit your profile.";
+                
+                // Hide the "Sign Up" toggle since they are trying to edit an existing account
+                if(dom.toggleMode) dom.toggleMode.style.display = 'none';
             }
         }
-        checkLinkingFlow();
+        checkInitialFlows();
 
         dom.closeBannerBtn.addEventListener('click', () => {
             dom.linkBanner.classList.add('hidden');
