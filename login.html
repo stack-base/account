@@ -1038,12 +1038,28 @@
 
         function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
+            
+            // 1. Check for predefined app routing
+            const appTarget = params.get('app');
+            const appRoutes = {
+                'timetrekker-desktop': 'https://stack-base.github.io/timetrekker/application?view=today',
+                'timetrekker-mobile': 'https://stack-base.github.io/timetrekker/application_mobile?view=today',
+                'account-center': 'https://stack-base.github.io/workspace/page?view=account-center'
+            };
+
+            if (appTarget && appRoutes[appTarget]) {
+                return appRoutes[appTarget];
+            }
+
+            // 2. Fallback to explicit redirectUrl parameter (Safe Base Checking)
             const redirectUrl = params.get('redirectUrl');
             const allowedBase = 'https://stack-base.github.io/';
 
             if (redirectUrl && redirectUrl.startsWith(allowedBase)) {
                 return redirectUrl;
             }
+            
+            // 3. Default fallback if no specific routing is provided
             return 'https://stack-base.github.io/workspace/page?view=dashboard';
         }
         const mainAppUrl = getRedirectUrl();
