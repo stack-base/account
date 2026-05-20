@@ -713,8 +713,8 @@
                 </div>
                 
                 <div id="auth-onboarding-view" class="view-wrapper hidden-view">
-                    <h1 class="auth-title">Complete Profile</h1>
-                    <p class="auth-subtitle">Just a few details to create your account.</p>
+                    <h1 class="auth-title" id="onboarding-title">Complete Profile</h1>
+                    <p class="auth-subtitle" id="onboarding-subtitle">Just a few details to create your account.</p>
 
                     <form id="onboarding-form">
                         <div class="input-group">
@@ -888,7 +888,10 @@
             linkTargetEmail: document.getElementById('link-target-email'),
             closeBannerBtn: document.getElementById('close-banner-btn'),
             separator: document.querySelector('.separator'),
-            toggleMode: document.querySelector('.toggle-mode')
+            toggleMode: document.querySelector('.toggle-mode'),
+
+            onboardingTitle: document.getElementById('onboarding-title'),
+            onboardingSubtitle: document.getElementById('onboarding-subtitle')
         };
 
         let isRegisterMode = false;
@@ -1177,8 +1180,8 @@
                         }
 
                         document.getElementById('complete-btn-text').textContent = "Update Profile";
-                        dom.pageTitle.textContent = "Edit Profile";
-                        dom.pageSubtitle.textContent = "Update your account details below.";
+                        dom.onboardingTitle.textContent = "Edit Profile";
+                        dom.onboardingSubtitle.textContent = "Update your account details below.";
                         
                         switchView('onboarding');
                     } else if (userData.onboardingComplete) {
