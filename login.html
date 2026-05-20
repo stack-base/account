@@ -15,7 +15,7 @@
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data: https://stack-base.github.io https://www.gstatic.com https://lh3.googleusercontent.com;
-        connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+        connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com;
         frame-src 'self' https://timetrekker-app.firebaseapp.com;
         object-src 'none';
         base-uri 'self';
@@ -222,6 +222,26 @@
         
         input:focus + .input-icon, 
         .input-group:focus-within .input-icon { color: var(--primary); }
+
+        .custom-select {
+            width: 100%;
+            padding: 14px 14px 14px 16px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-input);
+            border-radius: var(--radius-input);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        .custom-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            background-color: var(--bg-panel);
+        }
 
         .forgot-link {
             display: block;
@@ -587,6 +607,45 @@
                     <button id="savePasswordBtn" class="btn btn-primary" style="margin-bottom: 0.5rem;">Save Password</button>
                     <button id="skipPasswordBtn" class="back-link">Skip for Now</button>
                 </div>
+                
+                <div id="auth-onboarding-view" class="view-wrapper hidden-view">
+                    <h1 class="auth-title">Complete Profile</h1>
+                    <p class="auth-subtitle">Just a few details to finalize your account.</p>
+
+                    <form id="onboarding-form">
+                        <div class="input-group">
+                            <input type="text" id="profile-name" placeholder="Full Name" required autocomplete="name">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="email" id="profile-email" placeholder="Email Address" disabled style="opacity: 0.6; cursor: not-allowed;">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="tel" id="profile-phone" placeholder="Phone Number" required autocomplete="tel">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.076-7.076l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                            <select id="profile-gender" class="custom-select" required>
+                                <option value="" disabled selected>Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer-not-to-say">Prefer not to say</option>
+                            </select>
+                            
+                            <input type="text" id="profile-country" placeholder="Country" required style="margin-bottom: 0;" autocomplete="country-name">
+                        </div>
+
+                        <button type="submit" id="completeProfileBtn" class="btn btn-primary">
+                            <div class="spinner"></div>
+                            <span id="complete-btn-text">Save & Continue</span>
+                        </button>
+                    </form>
+                </div>
             </div>
             
         </div>
@@ -606,6 +665,13 @@
             updatePassword,
             sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('contextmenu', event => event.preventDefault());
 
@@ -621,12 +687,24 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
+        const APP_ID = 'timetrekker-v1';
 
         const dom = {
             mainView: document.getElementById('auth-main-view'),
             forgotView: document.getElementById('auth-forgot-view'),
             passwordSetupView: document.getElementById('auth-password-setup-view'),
+            
+            // New Onboarding Elements
+            onboardingView: document.getElementById('auth-onboarding-view'),
+            onboardingForm: document.getElementById('onboarding-form'),
+            profileName: document.getElementById('profile-name'),
+            profileEmail: document.getElementById('profile-email'),
+            profilePhone: document.getElementById('profile-phone'),
+            profileGender: document.getElementById('profile-gender'),
+            profileCountry: document.getElementById('profile-country'),
+            completeProfileBtn: document.getElementById('completeProfileBtn'),
             
             loginForm: document.getElementById('login-form'),
             resetForm: document.getElementById('reset-form'),
@@ -663,90 +741,64 @@
             iconSun: document.getElementById('icon-sun'),
             iconMoon: document.getElementById('icon-moon'),
 
-            // BANNER & ELEMENTS TO HIDE
             linkBanner: document.getElementById('link-account-banner'),
             linkTargetEmail: document.getElementById('link-target-email'),
             closeBannerBtn: document.getElementById('close-banner-btn'),
-            
-            // Elements to hide during linking
             separator: document.querySelector('.separator'),
             toggleMode: document.querySelector('.toggle-mode')
         };
 
         let isRegisterMode = false;
 
-        // SECURITY UPDATE: Strict Redirect Validation
         function getRedirectUrl() {
             const params = new URLSearchParams(window.location.search);
             const redirectUrl = params.get('redirectUrl');
-            
-            // SECURITY: Only allow redirects to your specific domain
             const allowedBase = 'https://stack-base.github.io/';
 
             if (redirectUrl && redirectUrl.startsWith(allowedBase)) {
                 return redirectUrl;
             }
-            
-            // SECURITY: Safe fallback
             return 'https://stack-base.github.io/workspace/page?view=dashboard';
         }
         const mainAppUrl = getRedirectUrl();
 
-        // --- CHECK LINKING FLOW ---
         function checkLinkingFlow() {
             const urlParams = new URLSearchParams(window.location.search);
             const flow = urlParams.get('flow');
             const linkEmail = urlParams.get('link_email');
 
             if (flow === 'link' && linkEmail) {
-                // Show Banner
                 dom.linkBanner.classList.remove('hidden');
                 dom.linkTargetEmail.textContent = linkEmail;
-                
-                // HIDE standard Auth Elements
                 dom.loginForm.style.display = 'none';
                 if(dom.separator) dom.separator.style.display = 'none';
                 if(dom.toggleMode) dom.toggleMode.style.display = 'none';
-
-                // Optional: Pre-fill email just in case needed internally
                 if(dom.emailInput) dom.emailInput.value = linkEmail;
-                
-                // Update Text
                 dom.pageTitle.textContent = "Link Google Account";
                 dom.pageSubtitle.textContent = "Sign in to connect your profiles.";
             }
         }
         checkLinkingFlow();
 
-        // Close Banner Logic
         dom.closeBannerBtn.addEventListener('click', () => {
             dom.linkBanner.classList.add('hidden');
-            
-            // Restore Elements
             dom.loginForm.style.display = 'block';
             if(dom.separator) dom.separator.style.display = 'flex';
             if(dom.toggleMode) dom.toggleMode.style.display = 'block';
-            
-            // Restore Text
             dom.pageTitle.textContent = "Sign In"; 
             dom.pageSubtitle.textContent = "Welcome back! Please enter your details.";
         });
-        // -------------------------
 
-        // SECURITY UPDATE: XSS-Safe Toast
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             
-            // Safe static HTML for icons
             const iconHtml = type === 'error' ? 
                 `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` : 
                 `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
             
             toast.innerHTML = iconHtml;
-            
-            // SECURITY: Use textContent for dynamic user/server strings
             const textSpan = document.createElement('span');
             textSpan.textContent = message;
             toast.appendChild(textSpan);
@@ -773,12 +825,15 @@
             dom.mainView.classList.add('hidden-view');
             dom.forgotView.classList.add('hidden-view');
             dom.passwordSetupView.classList.add('hidden-view');
+            dom.onboardingView.classList.add('hidden-view');
 
             if (viewName === 'forgot') {
                 dom.forgotView.classList.remove('hidden-view');
                 if(dom.emailInput.value) dom.resetEmailInput.value = dom.emailInput.value;
             } else if (viewName === 'password-setup') {
                 dom.passwordSetupView.classList.remove('hidden-view');
+            } else if (viewName === 'onboarding') {
+                dom.onboardingView.classList.remove('hidden-view');
             } else {
                 dom.mainView.classList.remove('hidden-view');
             }
@@ -787,9 +842,26 @@
         dom.forgotLink.addEventListener('click', (e) => { e.preventDefault(); switchView('forgot'); });
         dom.backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); switchView('login'); });
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (sessionStorage.getItem('pendingGoogleAuth')) return;
-            if (user) window.location.href = mainAppUrl;
+            
+            if (user) {
+                try {
+                    const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists() && userSnap.data().onboardingComplete) {
+                        window.location.href = mainAppUrl;
+                    } else {
+                        dom.profileName.value = user.displayName || '';
+                        dom.profileEmail.value = user.email || '';
+                        switchView('onboarding');
+                    }
+                } catch (error) {
+                    console.error("Error checking profile:", error);
+                    showToast("Failed to verify profile status.");
+                }
+            }
         });
 
         function setupToggle(icon, input) {
@@ -804,14 +876,12 @@
         setupToggle(dom.toggleNewPass, dom.newPasswordInput);
         setupToggle(dom.toggleConfirmNewPass, dom.confirmNewPasswordInput);
 
-        // SECURITY UPDATE: Rate Limiting Helper
         function triggerRateLimit(btn, originalText) {
              const originalColor = btn.style.backgroundColor;
              btn.disabled = true;
              btn.style.opacity = '0.5';
              btn.style.cursor = 'not-allowed';
              
-             // Wait 3 seconds before allowing another attempt
              setTimeout(() => {
                  btn.disabled = false;
                  btn.style.opacity = '1';
@@ -838,12 +908,10 @@
             try {
                 if (isRegisterMode) {
                     await createUserWithEmailAndPassword(auth, email, password);
-                    showToast('Account created successfully!', 'success');
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                // SECURITY: Apply rate limiting on error to prevent spam
                 triggerRateLimit(dom.submitBtn, isRegisterMode ? 'Sign Up' : 'Sign In');
                 handleAuthError(error);
             }
@@ -859,11 +927,9 @@
                 showToast('Reset link sent to your email!', 'success');
                 setTimeout(() => switchView('login'), 2000);
             } catch (error) {
-                // SECURITY: Rate limit reset requests too
                 triggerRateLimit(dom.sendResetBtn, 'Send Reset Link');
                 handleAuthError(error);
             } finally {
-                // Normally handled in rate limit, but if successful we want to clear loading
                 if (!dom.sendResetBtn.disabled) setLoading(dom.sendResetBtn, false, 'Send Reset Link');
             }
         });
@@ -876,7 +942,15 @@
                     switchView('password-setup');
                 } else {
                     sessionStorage.removeItem('pendingGoogleAuth');
-                    window.location.href = mainAppUrl;
+                    const userRef = doc(db, 'artifacts', APP_ID, 'users', result.user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists() && userSnap.data().onboardingComplete) {
+                        window.location.href = mainAppUrl;
+                    } else {
+                        dom.profileName.value = result.user.displayName || '';
+                        dom.profileEmail.value = result.user.email || '';
+                        switchView('onboarding');
+                    }
                 }
             } catch (error) {
                 sessionStorage.removeItem('pendingGoogleAuth');
@@ -924,7 +998,16 @@
             try {
                 await updatePassword(auth.currentUser, newPass);
                 sessionStorage.removeItem('pendingGoogleAuth');
-                window.location.href = mainAppUrl;
+                
+                const userRef = doc(db, 'artifacts', APP_ID, 'users', auth.currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists() && userSnap.data().onboardingComplete) {
+                    window.location.href = mainAppUrl;
+                } else {
+                    dom.profileName.value = auth.currentUser.displayName || '';
+                    dom.profileEmail.value = auth.currentUser.email || '';
+                    switchView('onboarding');
+                }
             } catch (error) {
                 dom.savePasswordBtn.textContent = originalText;
                 dom.savePasswordBtn.disabled = false;
@@ -932,9 +1015,53 @@
             }
         });
         
-        dom.skipPasswordBtn.addEventListener('click', () => {
+        dom.skipPasswordBtn.addEventListener('click', async () => {
             sessionStorage.removeItem('pendingGoogleAuth');
-            window.location.href = mainAppUrl;
+            const userRef = doc(db, 'artifacts', APP_ID, 'users', auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists() && userSnap.data().onboardingComplete) {
+                window.location.href = mainAppUrl;
+            } else {
+                dom.profileName.value = auth.currentUser.displayName || '';
+                dom.profileEmail.value = auth.currentUser.email || '';
+                switchView('onboarding');
+            }
+        });
+
+        // --- Handle Onboarding Form Submission ---
+        dom.onboardingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            setLoading(dom.completeProfileBtn, true);
+
+            try {
+                const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
+                
+                await setDoc(userRef, {
+                    name: dom.profileName.value,
+                    email: dom.profileEmail.value,
+                    phone: dom.profilePhone.value,
+                    gender: dom.profileGender.value,
+                    country: dom.profileCountry.value,
+                    photoURL: user.photoURL || '',
+                    provider: user.providerData[0]?.providerId || 'email',
+                    onboardingComplete: true,
+                    createdAt: serverTimestamp(),
+                    lastLogin: serverTimestamp()
+                }, { merge: true });
+
+                showToast('Profile setup complete!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = mainAppUrl;
+                }, 800);
+
+            } catch (error) {
+                setLoading(dom.completeProfileBtn, false, 'Save & Continue');
+                showToast(error.message);
+            }
         });
 
         dom.themeToggle.addEventListener('click', () => {
