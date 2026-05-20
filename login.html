@@ -1125,25 +1125,78 @@
         dom.forgotLink.addEventListener('click', (e) => { e.preventDefault(); switchView('forgot'); });
         dom.backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); switchView('login'); });
 
-        onAuthStateChanged(auth, async (user) => {
-            if (sessionStorage.getItem('pendingGoogleAuth')) return;
-            
-            if (user) {
-                try {
-                    const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
-                    const userSnap = await getDoc(userRef);
+        // --- ADDED UNIFIED ROUTING LOGIC ---
+        async function handlePostAuthRouting(user) {
+            try {
+                const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const flow = urlParams.get('flow');
+                const isEditFlow = flow === 'editprofile';
 
-                    if (userSnap.exists() && userSnap.data().onboardingComplete) {
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+
+                    if (isEditFlow) {
+                        dom.profileName.value = userData.name || user.displayName || '';
+                        dom.profileEmail.value = userData.email || user.email || '';
+                        
+                        if (userData.gender) {
+                            dom.profileGender.value = userData.gender;
+                            const option = document.querySelector(`.dropdown-option[data-value="${userData.gender}"]`);
+                            if (option) {
+                                genderDisplay.textContent = option.textContent;
+                                genderDisplay.style.color = 'var(--text-main)';
+                            }
+                        }
+
+                        if (userData.country) {
+                            dom.profileCountry.value = userData.country;
+                            const countryData = window.intlTelInputGlobals.getCountryData().find(c => c.iso2.toUpperCase() === userData.country);
+                            if (countryData) {
+                                const flagUrl = `https://flagcdn.com/w20/${countryData.iso2.toLowerCase()}.png`;
+                                countryDisplay.innerHTML = `<img src="${flagUrl}" width="20" style="border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); flex-shrink: 0;" alt="${countryData.iso2}"> <span style="color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${countryData.name}</span>`;
+                            }
+                        }
+
+                        if (userData.phone) {
+                            iti.setNumber(userData.phone);
+                            const currentCountry = iti.getSelectedCountryData();
+                            if (currentCountry && currentCountry.iso2) {
+                                const flagUrl = `https://flagcdn.com/w20/${currentCountry.iso2.toLowerCase()}.png`;
+                                phoneCodeDisplay.innerHTML = `<img src="${flagUrl}" width="20" style="border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="${currentCountry.iso2}"> <span>+${currentCountry.dialCode}</span>`;
+                            }
+                        }
+
+                        document.getElementById('complete-btn-text').textContent = "Update Profile";
+                        dom.pageTitle.textContent = "Edit Profile";
+                        dom.pageSubtitle.textContent = "Update your account details below.";
+                        
+                        switchView('onboarding');
+                    } else if (userData.onboardingComplete) {
                         window.location.href = mainAppUrl;
                     } else {
                         dom.profileName.value = user.displayName || '';
                         dom.profileEmail.value = user.email || '';
                         switchView('onboarding');
                     }
-                } catch (error) {
-                    console.error("Error checking profile:", error);
-                    showToast("Failed to verify profile status.");
+                } else {
+                    dom.profileName.value = user.displayName || '';
+                    dom.profileEmail.value = user.email || '';
+                    switchView('onboarding');
                 }
+            } catch (error) {
+                console.error("Error routing user:", error);
+                showToast("Failed to verify profile status.");
+            }
+        }
+
+        // --- UPDATED AUTH LISTENER ---
+        onAuthStateChanged(auth, async (user) => {
+            if (sessionStorage.getItem('pendingGoogleAuth')) return;
+            if (user) {
+                await handlePostAuthRouting(user);
             }
         });
 
@@ -1217,6 +1270,7 @@
             }
         });
 
+        // --- UPDATED GOOGLE BUTTON ---
         dom.googleBtn.addEventListener('click', async () => {
             sessionStorage.setItem('pendingGoogleAuth', 'true');
             try {
@@ -1225,15 +1279,7 @@
                     switchView('password-setup');
                 } else {
                     sessionStorage.removeItem('pendingGoogleAuth');
-                    const userRef = doc(db, 'artifacts', APP_ID, 'users', result.user.uid);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists() && userSnap.data().onboardingComplete) {
-                        window.location.href = mainAppUrl;
-                    } else {
-                        dom.profileName.value = result.user.displayName || '';
-                        dom.profileEmail.value = result.user.email || '';
-                        switchView('onboarding');
-                    }
+                    await handlePostAuthRouting(result.user);
                 }
             } catch (error) {
                 sessionStorage.removeItem('pendingGoogleAuth');
@@ -1267,6 +1313,7 @@
             }
         });
 
+        // --- UPDATED SAVE PASSWORD BUTTON ---
         dom.savePasswordBtn.addEventListener('click', async () => {
             const newPass = dom.newPasswordInput.value;
             const confirmPass = dom.confirmNewPasswordInput.value;
@@ -1281,16 +1328,7 @@
             try {
                 await updatePassword(auth.currentUser, newPass);
                 sessionStorage.removeItem('pendingGoogleAuth');
-                
-                const userRef = doc(db, 'artifacts', APP_ID, 'users', auth.currentUser.uid);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists() && userSnap.data().onboardingComplete) {
-                    window.location.href = mainAppUrl;
-                } else {
-                    dom.profileName.value = auth.currentUser.displayName || '';
-                    dom.profileEmail.value = auth.currentUser.email || '';
-                    switchView('onboarding');
-                }
+                await handlePostAuthRouting(auth.currentUser);
             } catch (error) {
                 dom.savePasswordBtn.textContent = originalText;
                 dom.savePasswordBtn.disabled = false;
@@ -1298,26 +1336,18 @@
             }
         });
         
+        // --- UPDATED SKIP PASSWORD BUTTON ---
         dom.skipPasswordBtn.addEventListener('click', async () => {
             sessionStorage.removeItem('pendingGoogleAuth');
-            const userRef = doc(db, 'artifacts', APP_ID, 'users', auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists() && userSnap.data().onboardingComplete) {
-                window.location.href = mainAppUrl;
-            } else {
-                dom.profileName.value = auth.currentUser.displayName || '';
-                dom.profileEmail.value = auth.currentUser.email || '';
-                switchView('onboarding');
-            }
+            await handlePostAuthRouting(auth.currentUser);
         });
 
-        // --- Handle Onboarding Form Submission ---
+        // --- UPDATED ONBOARDING FORM ---
         dom.onboardingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
             if (!user) return;
 
-            // Strict Validation Checks
             if (!iti.isValidNumber()) {
                 return showToast('Please enter a valid phone number for the selected country.');
             }
@@ -1347,7 +1377,11 @@
                     lastLogin: serverTimestamp()
                 }, { merge: true });
 
-                showToast('Profile setup complete!', 'success');
+                const urlParams = new URLSearchParams(window.location.search);
+                const isEditFlow = urlParams.get('flow') === 'editprofile';
+                const successMsg = isEditFlow ? 'Profile updated successfully!' : 'Profile setup complete!';
+                
+                showToast(successMsg, 'success');
                 
                 setTimeout(() => {
                     window.location.href = mainAppUrl;
