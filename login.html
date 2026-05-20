@@ -91,7 +91,7 @@
             background-color: var(--bg-page);
             color: var(--text-main);
             height: 100svh;
-            width: 100vw;
+            width: 100%; /* Changed from 100vw to eliminate scrollbar overlap */
             overflow: hidden;
             transition: background-color 0.3s ease;
             -webkit-user-select: none;
@@ -140,6 +140,7 @@
             padding: 2rem; 
             position: relative;
             overflow-y: auto;
+            overflow-x: hidden; /* Force hide horizontal bleeding */
         }
 
         .auth-container {
@@ -273,10 +274,6 @@
         .dropdown-options {
             position: absolute;
             top: calc(100% + 8px);
-            left: 0;
-            width: 100%;
-            /* Make country/phone dropdowns wider than their container to read full names */
-            min-width: 280px; 
             max-height: 250px;
             background-color: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
@@ -285,14 +282,31 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
+            overflow-x: hidden;
             z-index: 100;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px) scale(0.98);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        #gender-options { min-width: 100%; } /* Gender stays contained */
+
+        /* SMART ANCHORING: Prevents content bleeding off-screen */
+        #gender-options {
+            left: 0;
+            width: 100%; 
+        }
+        #phone-code-options {
+            left: 0; /* Left column -> Anchors left, expands right */
+            width: max-content;
+            min-width: 100%;
+            max-width: 280px; 
+        }
+        #country-options {
+            right: 0; /* Right column -> Anchors right, expands inward */
+            width: max-content;
+            min-width: 100%;
+            max-width: 280px;
+        }
 
         html.dark .dropdown-options {
             background-color: rgba(31, 41, 55, 0.85);
@@ -333,7 +347,6 @@
             height: 100%;
             display: block;
         }
-        /* Override padding since we disabled the native flag container */
         .iti input[type=tel] {
             padding-left: 16px !important;
         }
@@ -893,7 +906,6 @@
         const phoneCodeDisplay = document.getElementById('phone-code-display');
 
         // --- Headless Phone Initialization ---
-        // We tell intl-tel-input NOT to render its flag dropdown, we handle it custom
         const iti = window.intlTelInput(dom.profilePhone, {
             initialCountry: "auto",
             geoIpLookup: callback => {
@@ -903,8 +915,8 @@
                     .catch(() => callback("us"));
             },
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js",
-            showFlags: false,         // Hide built-in broken sprite flag
-            allowDropdown: false,     // Disable built-in dropdown
+            showFlags: false,         
+            allowDropdown: false,     
             separateDialCode: false
         });
 
@@ -926,11 +938,8 @@
                 pOption.innerHTML = `${flagImg} <span style="white-space: nowrap;">${country.name} (+${country.dialCode})</span>`;
                 
                 pOption.addEventListener('click', () => {
-                    // Update our custom UI
                     phoneCodeDisplay.innerHTML = `${flagImg} <span>+${country.dialCode}</span>`;
-                    // Programmatically tell intl-tel-input to format for this country
                     iti.setCountry(country.iso2); 
-                    
                     phoneCodeDropdownContainer.classList.remove('open');
                     phoneCodeSelected.classList.remove('active');
                     dom.profilePhone.focus();
@@ -949,7 +958,6 @@
                 rOption.addEventListener('click', () => {
                     countryDisplay.innerHTML = `${flagImg} <span style="color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${country.name}</span>`;
                     dom.profileCountry.value = country.iso2.toUpperCase();
-                    
                     countryDropdownContainer.classList.remove('open');
                     countrySelected.classList.remove('active');
                 });
@@ -957,7 +965,6 @@
             });
         });
 
-        // Set initial phone code display once GeoIP resolves
         iti.promise.then(() => {
             const currentCountry = iti.getSelectedCountryData();
             if (currentCountry && currentCountry.iso2) {
