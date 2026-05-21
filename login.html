@@ -551,6 +551,14 @@
             .layout-container { grid-template-columns: 1fr 560px; }
             .auth-container { max-width: 420px; }
         }
+        
+        /* Hide native intl-tel-input flag/dial code container since we use a custom one */
+        .iti__flag-container { 
+            display: none !important; 
+        }
+        .iti input[type=tel] { 
+            padding-left: 16px !important; /* Overrides the plugin's automatic padding */
+        }
     </style>
 </head>
 <body>
@@ -742,7 +750,7 @@
                             </div>
                             
                             <div class="input-group" style="margin-bottom: 0;">
-                                <input type="tel" id="profile-phone" placeholder="Phone Number" required autocomplete="tel">
+                                <input type="tel" id="profile-phone" placeholder="Phone Number" required autocomplete="tel-national">
                             </div>
                             
                         </div>
@@ -919,12 +927,23 @@
                 fetch("https://ipapi.co/json")
                     .then(res => res.json())
                     .then(data => callback(data.country_code))
-                    .catch(() => callback("us"));
+                    .catch(() => callback("in")); // Defaulted to 'in' as a reliable fallback
             },
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js",
             showFlags: false,         
             allowDropdown: false,     
-            separateDialCode: false
+            separateDialCode: true,   // Forces the plugin to strip the dial code from the input
+            strictMode: true,         // Blocks typing invalid characters for the selected country
+            formatOnDisplay: true
+        });
+
+        // --- Smart Sync: Update Custom Dropdown if ITI detects a pasted country code ---
+        dom.profilePhone.addEventListener("countrychange", () => {
+            const currentCountry = iti.getSelectedCountryData();
+            if (currentCountry && currentCountry.iso2) {
+                const flagUrl = `https://flagcdn.com/w20/${currentCountry.iso2.toLowerCase()}.png`;
+                phoneCodeDisplay.innerHTML = `<img src="${flagUrl}" width="20" style="border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);" alt="${currentCountry.iso2}"> <span style="color: var(--text-main); display: flex; align-items: center; gap: 8px;">+${currentCountry.dialCode}</span>`;
+            }
         });
 
         // Dynamic Dropdown Population
