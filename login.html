@@ -559,6 +559,16 @@
         .iti input[type=tel] { 
             padding-left: 16px !important; /* Overrides the plugin's automatic padding */
         }
+        .input-icon {
+            /* Existing properties... */
+            transition: color 0.2s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        input:focus + .input-icon, 
+        .input-group:focus-within .input-icon { 
+            color: var(--primary); 
+            transform: translateY(-50%) scale(1.15); 
+        }
     </style>
 </head>
 <body>
@@ -1462,13 +1472,22 @@
         updateThemeIcon(document.documentElement.classList.contains('dark'));
 
         function handleAuthError(error) {
-            let msg = error.message;
-            if (msg.includes('invalid-email')) msg = 'Invalid email address.';
-            else if (msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('invalid-credential')) msg = 'Incorrect email or password.';
-            else if (msg.includes('email-already-in-use')) msg = 'Email already in use.';
-            else if (msg.includes('weak-password')) msg = 'Password is too weak.';
-            else if (msg.includes('too-many-requests')) msg = 'Too many attempts. Try again later.';
-            showToast(msg);
+            const errorCode = error.code || error.message;
+            
+            const errorMap = {
+                'auth/invalid-email': 'Please enter a valid email address.',
+                'auth/user-not-found': 'Incorrect email or password.',
+                'auth/wrong-password': 'Incorrect email or password.',
+                'auth/invalid-credential': 'Incorrect email or password.',
+                'auth/email-already-in-use': 'This email is already linked to an account.',
+                'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
+                'auth/too-many-requests': 'Too many attempts. Please try again later.',
+                'auth/network-request-failed': 'Network error. Check your connection.'
+            };
+
+            // Fallback to the raw Firebase message if it's not in our map
+            const msg = errorMap[errorCode] || error.message.replace('Firebase:', '').trim();
+            showToast(msg, 'error');
         }
     </script>
 </body>
