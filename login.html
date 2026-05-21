@@ -1389,22 +1389,31 @@
             try {
                 const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
                 const universalPhoneNumber = iti.getNumber();
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const isEditFlow = urlParams.get('flow') === 'editprofile';
 
-                await setDoc(userRef, {
+                // 1. Build the base payload for fields that should ALWAYS update
+                const payload = {
                     name: dom.profileName.value,
                     email: dom.profileEmail.value,
                     phone: universalPhoneNumber,
                     country: dom.profileCountry.value,
                     gender: dom.profileGender.value,
-                    photoURL: user.photoURL || '',
-                    provider: user.providerData[0]?.providerId || 'email',
                     onboardingComplete: true,
-                    createdAt: serverTimestamp(),
                     lastLogin: serverTimestamp()
-                }, { merge: true });
+                };
 
-                const urlParams = new URLSearchParams(window.location.search);
-                const isEditFlow = urlParams.get('flow') === 'editprofile';
+                // 2. Only add destructive fields if it is a NEW setup (not an edit flow)
+                if (!isEditFlow) {
+                    payload.photoURL = user.photoURL || '';
+                    payload.provider = user.providerData[0]?.providerId || 'email';
+                    payload.createdAt = serverTimestamp();
+                }
+
+                // 3. Save to Firestore
+                await setDoc(userRef, payload, { merge: true });
+
                 const successMsg = isEditFlow ? 'Profile updated successfully!' : 'Profile setup complete!';
                 
                 showToast(successMsg, 'success');
